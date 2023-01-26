@@ -1,15 +1,16 @@
 {
-	"name": "obsidian-sample-plugin",
-	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"name": "obsidian-file-diff",
+	"version": "0.0.1",
+	"description": "Shows the differences between two files.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": ["obsidian"],
+	"author": "Till Friebe",
+	"authorUrl": "https://friebetill.github.io/",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
