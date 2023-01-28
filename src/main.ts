@@ -1,6 +1,7 @@
 import { Editor, Plugin, TFile } from "obsidian";
 
 import { createTwoFilesPatch } from "diff";
+import { PatchView } from "./patch_view";
 import { SelectFileModal } from "./select_file_modal";
 
 export default class FileDiffPlugin extends Plugin {
@@ -36,9 +37,8 @@ export default class FileDiffPlugin extends Plugin {
 					fileToCompareContent
 				);
 
-				console.log(patch);
-
-				// Open viewer to show patch
+				const workspaceLeaf = this.app.workspace.getLeaf();
+				await workspaceLeaf.open(new PatchView(workspaceLeaf, activeFile, fileToCompare, patch));
 			},
 		});
 	}
