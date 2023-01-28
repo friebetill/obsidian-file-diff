@@ -12,8 +12,11 @@ export default class FileDiffPlugin extends Plugin {
 					return;
 				}
 
+				const selectableFiles = this.app.vault.getFiles();
+				selectableFiles.remove(activeFile);
+
 				await this.showSelectOtherFileModal({
-					selectableFiles: this.app.vault.getFiles(),
+					selectableFiles: selectableFiles,
 				});
 
 				// Install library to calculate the difference between two files
