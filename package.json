@@ -10,11 +10,17 @@
 		"coverage": "vitest run --coverage",
 		"release": "./scripts/release.sh"
 	},
-	"keywords": ["obsidian"],
+	"keywords": [
+		"obsidian"
+	],
 	"author": "Till Friebe",
 	"authorUrl": "https://friebetill.github.io/",
 	"license": "MIT",
+	"dependencies": {
+		"diff": "^5.1.0"
+	},
 	"devDependencies": {
+		"@types/diff": "^5.0.2",
 		"@types/node": "^16.11.6",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",

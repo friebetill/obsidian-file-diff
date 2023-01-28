@@ -1,4 +1,6 @@
 import { Editor, Plugin, TFile } from "obsidian";
+
+import { createTwoFilesPatch } from "diff";
 import { SelectFileModal } from "./select_file_modal";
 
 export default class FileDiffPlugin extends Plugin {
@@ -15,12 +17,28 @@ export default class FileDiffPlugin extends Plugin {
 				const selectableFiles = this.app.vault.getFiles();
 				selectableFiles.remove(activeFile);
 
-				await this.showSelectOtherFileModal({
+				const fileToCompare = await this.showSelectOtherFileModal({
 					selectableFiles: selectableFiles,
 				});
+				if (fileToCompare == null) {
+					return;
+				}
 
-				// Install library to calculate the difference between two files
-				// Open new file where the differences are shown
+				const activeFileContent = await this.app.vault.read(activeFile);
+				const fileToCompareContent = await this.app.vault.read(
+					fileToCompare
+				);
+
+				const patch = createTwoFilesPatch(
+					activeFile.path,
+					fileToCompare.path,
+					activeFileContent,
+					fileToCompareContent
+				);
+
+				console.log(patch);
+
+				// Open viewer to show patch
 			},
 		});
 	}
