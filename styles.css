@@ -1,8 +1,50 @@
-/*
+.container {
+	width: 100%;
+	max-width: 100%;
+	overflow-x: scroll;
+	padding: 1rem;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.line {
+	padding: 0.1rem 0;
+}
 
-If your plugin does not need CSS, delete this file.
+.bg-turquoise-light {
+	background-color: #d9f4ef;
+}
 
-*/
+.bg-blue-light {
+	background-color: #d9edff;
+}
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
+}
+
+.gap-2 {
+	gap: 4px;
+}
+
+.no-decoration {
+	text-decoration: none;
+	text-decoration-line: none;
+}
+
+.no-decoration:hover{
+	text-decoration: none;
+	text-decoration-line: none;
+}
+
+.text-xxs {
+	font-size: 0.65rem;
+}
+
+.py-2 {
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.text-gray {
+	color: #919191;
+}
