@@ -1,5 +1,6 @@
 import { Hunk, ParsedDiff } from "diff";
-import { ItemView, WorkspaceLeaf } from "obsidian";
+import { ItemView, TFile, WorkspaceLeaf } from "obsidian";
+import { replaceLine } from "./line_replacer/replace_line";
 
 export const VIEW_TYPE_PATCH = "patch-view";
 
@@ -8,6 +9,8 @@ export class PatchView extends ItemView {
 		leaf: WorkspaceLeaf,
 		public file1Content: string,
 		public file2Content: string,
+		public file1: TFile,
+		public file2: TFile,
 		public patch: ParsedDiff
 	) {
 		super(leaf);
@@ -22,6 +25,7 @@ export class PatchView extends ItemView {
 	}
 
 	async onOpen() {
+		this.contentEl.empty();
 		const container = this.contentEl.createDiv({ cls: "container" });
 		const lines = this.file1Content.split("\n");
 
@@ -40,12 +44,8 @@ export class PatchView extends ItemView {
 		});
 	}
 
-	async onClose() {
-		// Nothing to clean up.
-	}
-
 	private buildHunkVisualizer(container: HTMLDivElement, hunk: Hunk) {
-		this.buildActionLine(container);
+		this.buildActionLine(container, hunk);
 
 		hunk.lines.forEach((line) => {
 			if (line.startsWith("+")) {
@@ -62,25 +62,20 @@ export class PatchView extends ItemView {
 		});
 	}
 
-	private buildActionLine(container: HTMLDivElement) {
+
+	private buildActionLine(container: HTMLDivElement, hunk: Hunk) {
 		const actionLine = container.createDiv({ cls: "flex-row gap-2 py-2" });
 
-		this.buildActionLineButton(
-			actionLine,
-			"Accept Top",
-			this.handleAcceptTopClick
+		this.buildActionLineButton(actionLine, "Accept Top", (e) =>
+			this.handleAcceptTopClick(e, hunk)
 		);
 		this.buildActionLineDivider(actionLine);
-		this.buildActionLineButton(
-			actionLine,
-			"Accept Bottom",
-			this.handleAcceptBottomClick
+		this.buildActionLineButton(actionLine, "Accept Bottom", (e) =>
+			this.handleAcceptBottomClick(e, hunk)
 		);
 		this.buildActionLineDivider(actionLine);
-		this.buildActionLineButton(
-			actionLine,
-			"Accept All",
-			this.handleAcceptAllClick
+		this.buildActionLineButton(actionLine, "Accept All", (e) =>
+			this.handleAcceptAllClick(e, hunk)
 		);
 	}
 
@@ -101,18 +96,90 @@ export class PatchView extends ItemView {
 		});
 	}
 
-	private handleAcceptTopClick(event: MouseEvent): void {
+	private async handleAcceptTopClick(
+		event: MouseEvent,
+		hunk: Hunk
+	): Promise<void> {
 		event.preventDefault();
-		console.log("Accept top");
+		const file1Content = await this.app.vault.read(this.file1);
+		const changedLines = hunk.lines
+			.filter((line) => line.startsWith("-"))
+			.map((line) => line.slice(1, line.length))
+			.join("\n");
+		const lineWithMinusIndex = hunk.lines.findIndex(
+			(line) => line.startsWith("-") || line.startsWith("+")
+		);
+		const newContent = replaceLine(
+			file1Content,
+			hunk.oldStart - 1 + lineWithMinusIndex,
+			changedLines
+		);
+		await this.app.vault.modify(this.file1, newContent);
+
+		this.patch.hunks.remove(hunk);
+
+		this.file1Content = newContent;
+
+		this.triggerRebuild();
 	}
 
-	private handleAcceptBottomClick(event: MouseEvent): void {
+	private async handleAcceptBottomClick(
+		event: MouseEvent,
+		hunk: Hunk
+	): Promise<void> {
 		event.preventDefault();
-		console.log("Accept bottom");
+		event.preventDefault();
+		const file1Content = await this.app.vault.read(this.file1);
+		const changedLines = hunk.lines
+			.filter((line) => line.startsWith("+"))
+			.map((line) => line.slice(1, line.length))
+			.join("\n");
+		const lineWithMinusIndex = hunk.lines.findIndex(
+			(line) => line.startsWith("-") || line.startsWith("+")
+		);
+		const newContent = replaceLine(
+			file1Content,
+			hunk.oldStart - 1 + lineWithMinusIndex,
+			changedLines
+		);
+		await this.app.vault.modify(this.file1, newContent);
+
+		this.patch.hunks.remove(hunk);
+
+		this.file1Content = newContent;
+
+		this.triggerRebuild();
 	}
 
-	private handleAcceptAllClick(event: MouseEvent): void {
+	private async handleAcceptAllClick(
+		event: MouseEvent,
+		hunk: Hunk
+	): Promise<void> {
 		event.preventDefault();
-		console.log("Accept all");
+		const file1Content = await this.app.vault.read(this.file1);
+		const changedLines = hunk.lines
+			.filter((line) => line.startsWith("-") || line.startsWith("+"))
+			.map((line) => line.slice(1, line.length))
+			.join("\n");
+
+		const lineWithMinusIndex = hunk.lines.findIndex(
+			(line) => line.startsWith("-") || line.startsWith("+")
+		);
+		const newContent = replaceLine(
+			file1Content,
+			hunk.oldStart - 1 + lineWithMinusIndex,
+			changedLines
+		);
+		await this.app.vault.modify(this.file1, newContent);
+
+		this.patch.hunks.remove(hunk);
+
+		this.file1Content = newContent;
+
+		this.triggerRebuild();
+	}
+
+	private triggerRebuild() {
+		this.onOpen();
 	}
 }

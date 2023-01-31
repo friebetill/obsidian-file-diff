@@ -45,6 +45,8 @@ export default class FileDiffPlugin extends Plugin {
 						workspaceLeaf,
 						activeFileContent,
 						fileToCompareContent,
+						activeFile,
+						fileToCompare,
 						patch
 					)
 				);
