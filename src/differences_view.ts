@@ -30,17 +30,27 @@ export class DifferencesView extends ItemView {
 		const container = this.contentEl.createDiv({ cls: "container" });
 		const lines = this.file1Content.split("\n");
 
-		lines.forEach((line, i) => {
+		const lineCount = Math.max(
+			lines.length,
+			...this.fileDifferences.differences.map((d) => d.start)
+		);
+
+		for (let i = 0; i <= lineCount; i++) {
+			const line = i in lines ? lines[i] : null;
 			const difference = this.fileDifferences.differences.find(
 				(d) => d.start === i
 			);
 
 			if (difference != null) {
 				this.buildDifferenceVisualizer(container, difference);
-			} else {
+			}
+			if (
+				line != null &&
+				(difference == null || !difference.hasChangesFromFile1())
+			) {
 				container.createDiv({ text: line, cls: "line" });
 			}
-		});
+		}
 	}
 
 	private buildDifferenceVisualizer(
@@ -218,7 +228,7 @@ export class DifferencesView extends ItemView {
 		const newContent = replaceLine(
 			file1Content,
 			difference.start - 1 + minusPlusLinesCount,
-			''
+			""
 		);
 		await this.app.vault.modify(this.file1, newContent);
 
