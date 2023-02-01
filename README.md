@@ -6,3 +6,6 @@
 See the differences between two files with [Obsidian](https://obsidian.md/).
 
 ## ⚠️ This plugin is in development and not working at the moment. ⚠️
+
+<img src="https://user-images.githubusercontent.com/10923085/216142663-703e489e-6f47-4193-8e69-20c7fdfd6f61.gif" height="400"/>
+
