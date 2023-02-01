@@ -4,3 +4,5 @@
 ![GitHub stars](https://img.shields.io/github/stars/friebetill/obsidian-file-diff?style=flat)
 
 See the differences between two files with [Obsidian](https://obsidian.md/).
+
+## ⚠️ This plugin is in development and not working at the moment. ⚠️
