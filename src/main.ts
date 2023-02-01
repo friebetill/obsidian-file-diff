@@ -1,7 +1,8 @@
 import { Editor, Plugin, TFile } from "obsidian";
 
 import { structuredPatch } from "diff";
-import { PatchView } from "./patch_view";
+import { FileDifferences } from "./data/file_differences";
+import { DifferencesView } from "./differences_view";
 import { SelectFileModal } from "./select_file_modal";
 
 export default class FileDiffPlugin extends Plugin {
@@ -19,35 +20,37 @@ export default class FileDiffPlugin extends Plugin {
 				// Get file to compare
 				const selectableFiles = this.app.vault.getFiles();
 				selectableFiles.remove(activeFile);
-				const fileToCompare = await this.showSelectOtherFileModal({
+				const compareFile = await this.showSelectOtherFileModal({
 					selectableFiles: selectableFiles,
 				});
-				if (fileToCompare == null) {
+				if (compareFile == null) {
 					return;
 				}
 
 				// Create difference between the files
 				const activeFileContent = await this.app.vault.read(activeFile);
-				const fileToCompareContent = await this.app.vault.read(
-					fileToCompare
+				const compareFileContent = await this.app.vault.read(
+					compareFile
 				);
-				const patch = structuredPatch(
-					activeFile.path,
-					fileToCompare.path,
-					activeFileContent,
-					fileToCompareContent
+				const fileDifferences = FileDifferences.fromParsedDiff(
+					structuredPatch(
+						activeFile.path,
+						compareFile.path,
+						activeFileContent,
+						compareFileContent
+					)
 				);
 
 				// Show difference
 				const workspaceLeaf = this.app.workspace.getLeaf();
 				await workspaceLeaf.open(
-					new PatchView(
+					new DifferencesView(
 						workspaceLeaf,
 						activeFileContent,
-						fileToCompareContent,
+						compareFileContent,
 						activeFile,
-						fileToCompare,
-						patch
+						compareFile,
+						fileDifferences
 					)
 				);
 			},
