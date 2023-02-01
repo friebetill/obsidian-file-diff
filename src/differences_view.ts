@@ -1,7 +1,7 @@
 import { ItemView, TFile, WorkspaceLeaf } from "obsidian";
 import { Difference } from "./data/difference";
 import { FileDifferences } from "./data/file_differences";
-import { replaceLine } from "./line_replacer/replace_line";
+import { preventEmptyString, replaceLine } from "./utils/string_utils";
 
 export const VIEW_TYPE_PATCH = "patch-view";
 
@@ -36,7 +36,7 @@ export class DifferencesView extends ItemView {
 		);
 
 		for (let i = 0; i <= lineCount; i++) {
-			const line = i in lines ? lines[i] : null;
+			let line = i in lines ? lines[i] : null;
 			const difference = this.fileDifferences.differences.find(
 				(d) => d.start === i
 			);
@@ -48,7 +48,11 @@ export class DifferencesView extends ItemView {
 				line != null &&
 				(difference == null || !difference.hasChangesFromFile1())
 			) {
-				container.createDiv({ text: line, cls: "line" });
+				container.createDiv({
+					// Necessary to give the line a height when it's empty.
+					text: preventEmptyString(line),
+					cls: "line",
+				});
 			}
 		}
 	}
@@ -62,12 +66,14 @@ export class DifferencesView extends ItemView {
 		difference.lines.forEach((line) => {
 			if (line.startsWith("+")) {
 				container.createDiv({
-					text: line.slice(1, line.length),
+					// Necessary to give the line a height when it's empty.
+					text: preventEmptyString(line.slice(1, line.length)),
 					cls: "line bg-turquoise-light",
 				});
 			} else if (line.startsWith("-")) {
 				container.createDiv({
-					text: line.slice(1, line.length),
+					// Necessary to give the line a height when it's empty.
+					text: preventEmptyString(line.slice(1, line.length)),
 					cls: "line bg-blue-light",
 				});
 			}
