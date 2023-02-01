@@ -9,12 +9,24 @@
 	padding: 0.1rem 0;
 }
 
-.bg-turquoise-light {
-	background-color: #d9f4ef;
+@media (prefers-color-scheme: light) {
+	.bg-turquoise-light {
+		background-color: #D9F4EF;
+	}
+
+	.bg-blue-light {
+		background-color: #25403B;
+	}
 }
 
-.bg-blue-light {
-	background-color: #d9edff;
+@media (prefers-color-scheme: dark) {
+	.bg-turquoise-light {
+		background-color: #25403B;
+	}
+
+	.bg-blue-light {
+		background-color: #25394B;
+	}
 }
 
 .flex-row {
@@ -31,7 +43,7 @@
 	text-decoration-line: none;
 }
 
-.no-decoration:hover{
+.no-decoration:hover {
 	text-decoration: none;
 	text-decoration-line: none;
 }
