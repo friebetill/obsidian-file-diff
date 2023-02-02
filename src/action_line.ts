@@ -2,7 +2,6 @@ import { TFile } from "obsidian";
 import { Difference } from "./data/difference";
 import { replaceLine } from "./utils/string_utils";
 
-// typedef for a voidcallback
 type VoidCallback = () => void;
 
 export class ActionLine {

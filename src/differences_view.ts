@@ -39,7 +39,7 @@ export class DifferencesView extends ItemView {
 				this.file1.path,
 				this.file2.path,
 				file1Content,
-				file2Content,
+				file2Content
 			)
 		);
 
@@ -83,11 +83,13 @@ export class DifferencesView extends ItemView {
 		container: HTMLDivElement,
 		difference: Difference
 	) {
+		const triggerRebuild = () => this.onOpen();
+
 		new ActionLine(
 			difference,
 			this.file1,
 			this.file2,
-			this.triggerRebuild
+			triggerRebuild
 		).build(container);
 
 		difference.lines.forEach((line) => {
@@ -105,9 +107,5 @@ export class DifferencesView extends ItemView {
 				});
 			}
 		});
-	}
-
-	private triggerRebuild() {
-		this.onOpen();
 	}
 }
