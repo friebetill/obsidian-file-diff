@@ -22,4 +22,14 @@ describe('replaceLine', () => {
 		})
 		expect(newFullText).toBe('line1\nnewLine2\nnewLine3\nline3')
 	})
+
+	it('should replacing with mutliple lines correctly', () => {
+		const fullText = 'line1\nline2\nline3'
+		const newFullText = replaceLine({
+			fullText,
+			newLine: '',
+			position: 1,
+		})
+		expect(newFullText).toBe('line1\nline3')
+	})
 })

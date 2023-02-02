@@ -5,7 +5,13 @@ export function replaceLine(args: {
 	position: number
 }): string {
 	const lines = args.fullText.split('\n')
-	lines[args.position] = args.newLine
+
+	if (args.newLine.length === 0) {
+		lines.splice(args.position, 1)
+	} else {
+		lines[args.position] = args.newLine
+	}
+
 	return lines.join('\n')
 }
 

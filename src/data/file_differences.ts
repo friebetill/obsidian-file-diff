@@ -61,7 +61,8 @@ export class FileDifferences {
 					// Add the contiguous lines to the differences
 					differences.push(
 						new Difference({
-							start: hunk.oldStart + start - 1,
+							file1Start: hunk.oldStart + start - 1,
+							file2Start: hunk.newStart + start - 1,
 							lines: hunk.lines.slice(start, end + 1),
 						})
 					)

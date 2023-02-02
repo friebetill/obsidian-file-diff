@@ -48,43 +48,42 @@ export class ActionLine {
 		if (hasPlusLines && hasMinusLines) {
 			new ActionLineButton({
 				text: 'Accept Top',
-				onClick: (e) => this.handleAcceptTopClick(e, this.difference),
+				onClick: (e) => this.acceptTopClick(e, this.difference),
 			}).build(actionLine)
 			ActionLineDivider.build(actionLine)
 			new ActionLineButton({
 				text: 'Accept Bottom',
-				onClick: (e) =>
-					this.handleAcceptBottomClick(e, this.difference),
+				onClick: (e) => this.acceptBottomClick(e, this.difference),
 			}).build(actionLine)
 			ActionLineDivider.build(actionLine)
 			new ActionLineButton({
 				text: 'Accept All',
-				onClick: (e) => this.handleAcceptAllClick(e, this.difference),
+				onClick: (e) => this.acceptAllClick(e, this.difference),
 			}).build(actionLine)
 		} else if (hasMinusLines) {
 			new ActionLineButton({
 				text: `Accept from ${this.file1.name}`,
-				onClick: (e) => this.handleAcceptTopClick(e, this.difference),
+				onClick: (e) => this.acceptTopClick(e, this.difference),
 			}).build(actionLine)
 			ActionLineDivider.build(actionLine)
 			new ActionLineButton({
 				text: 'Discard',
-				onClick: (e) => this.handleDiscardClick(e, this.difference),
+				onClick: (e) => this.discardFile1Difference(e, this.difference),
 			}).build(actionLine)
 		} else if (hasPlusLines) {
 			new ActionLineButton({
 				text: `Accept from ${this.file2.name}`,
-				onClick: (e) => this.handleAcceptTopClick(e, this.difference),
+				onClick: (e) => this.acceptTopClick(e, this.difference),
 			}).build(actionLine)
 			ActionLineDivider.build(actionLine)
 			new ActionLineButton({
 				text: 'Discard',
-				onClick: (e) => this.handleDiscardClick(e, this.difference),
+				onClick: (e) => this.discardFile2Difference(e, this.difference),
 			}).build(actionLine)
 		}
 	}
 
-	private async handleAcceptTopClick(
+	private async acceptTopClick(
 		event: MouseEvent,
 		difference: Difference
 	): Promise<void> {
@@ -94,20 +93,17 @@ export class ActionLine {
 			.filter((line) => line.startsWith('-'))
 			.map((line) => line.slice(1, line.length))
 			.join('\n')
-		const minusPlusLinesCount = difference.lines.findIndex(
-			(line) => line.startsWith('-') || line.startsWith('+')
-		)
 		const newContent = replaceLine({
-			fullText: this.file1Content,
-			position: difference.start - 1 + minusPlusLinesCount,
+			fullText: this.file2Content,
 			newLine: changedLines,
+			position: difference.file2Start,
 		})
-		await app.vault.modify(this.file1, newContent)
+		await app.vault.modify(this.file2, newContent)
 
 		this.triggerRebuild()
 	}
 
-	private async handleAcceptBottomClick(
+	private async acceptBottomClick(
 		event: MouseEvent,
 		difference: Difference
 	): Promise<void> {
@@ -119,15 +115,15 @@ export class ActionLine {
 			.join('\n')
 		const newContent = replaceLine({
 			fullText: this.file1Content,
-			position: difference.start - 1,
 			newLine: changedLines,
+			position: difference.file1Start,
 		})
 		await app.vault.modify(this.file1, newContent)
 
 		this.triggerRebuild()
 	}
 
-	private async handleAcceptAllClick(
+	private async acceptAllClick(
 		event: MouseEvent,
 		difference: Difference
 	): Promise<void> {
@@ -138,34 +134,51 @@ export class ActionLine {
 			.map((line) => line.slice(1, line.length))
 			.join('\n')
 
-		const minusPlusLinesCount = difference.lines.findIndex(
-			(line) => line.startsWith('-') || line.startsWith('+')
-		)
+		const newFile1Content = replaceLine({
+			fullText: this.file1Content,
+			newLine: changedLines,
+			position: difference.file1Start,
+		})
+		await app.vault.modify(this.file1, newFile1Content)
+
+		const newFile2Content = replaceLine({
+			fullText: this.file2Content,
+			newLine: changedLines,
+			position: difference.file2Start,
+		})
+		await app.vault.modify(this.file2, newFile2Content)
+
+		this.triggerRebuild()
+	}
+
+	async discardFile1Difference(
+		event: MouseEvent,
+		difference: Difference
+	): Promise<void> {
+		event.preventDefault()
+
 		const newContent = replaceLine({
 			fullText: this.file1Content,
-			position: difference.start - 1 + minusPlusLinesCount,
-			newLine: changedLines,
+			newLine: '',
+			position: difference.file1Start,
 		})
 		await app.vault.modify(this.file1, newContent)
 
 		this.triggerRebuild()
 	}
 
-	async handleDiscardClick(
+	async discardFile2Difference(
 		event: MouseEvent,
 		difference: Difference
 	): Promise<void> {
 		event.preventDefault()
 
-		const minusPlusLinesCount = difference.lines.findIndex(
-			(line) => line.startsWith('-') || line.startsWith('+')
-		)
 		const newContent = replaceLine({
-			fullText: this.file1Content,
-			position: difference.start - 1 + minusPlusLinesCount,
+			fullText: this.file2Content,
 			newLine: '',
+			position: difference.file2Start,
 		})
-		await app.vault.modify(this.file1, newContent)
+		await app.vault.modify(this.file2, newContent)
 
 		this.triggerRebuild()
 	}

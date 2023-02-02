@@ -1,10 +1,17 @@
 export class Difference {
-	constructor(args: { start: number; lines: string[] }) {
-		this.start = args.start
+	constructor(args: {
+		file1Start: number
+		file2Start: number
+		lines: string[]
+	}) {
+		this.file1Start = args.file1Start
+		this.file2Start = args.file2Start
 		this.lines = args.lines
 	}
 
-	public readonly start: number
+	public readonly file1Start: number
+
+	public readonly file2Start: number
 
 	public readonly lines: string[]
 

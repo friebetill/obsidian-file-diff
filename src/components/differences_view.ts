@@ -70,7 +70,7 @@ export class DifferencesView extends ItemView {
 		// more lines than the first file.
 		this.lineCount = Math.max(
 			this.file1Lines.length,
-			...this.fileDifferences.differences.map((d) => d.start)
+			...this.fileDifferences.differences.map((d) => d.file1Start)
 		)
 	}
 
@@ -82,7 +82,7 @@ export class DifferencesView extends ItemView {
 		for (let i = 0; i <= this.lineCount; i += 1) {
 			const line = i in this.file1Lines ? this.file1Lines[i] : null
 			const difference = this.fileDifferences.differences.find(
-				(d) => d.start === i
+				(d) => d.file1Start === i
 			)
 
 			if (difference != null) {
