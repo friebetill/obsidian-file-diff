@@ -7,8 +7,10 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"test": "vitest",
+		"format": "prettier --write \"**/*.{ts,tsx}\"",
 		"coverage": "vitest run --coverage",
 		"release": "./scripts/release.sh"
+
 	},
 	"keywords": [
 		"obsidian"
@@ -27,6 +29,7 @@
 		"builtin-modules": "3.3.0",
 		"esbuild": "0.17.3",
 		"obsidian": "latest",
+		"prettier": "^2.8.3",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4",
 		"vitest": "^0.28.3"
