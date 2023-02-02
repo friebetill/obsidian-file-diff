@@ -1,15 +1,15 @@
 /** Method to replace line in a string */
-export function replaceLine(
-	text: string,
-	lineNumber: number,
-	contentToInsert: string
-): string {
-	const lines = text.split("\n");
-	lines[lineNumber] = contentToInsert;
-	return lines.join("\n");
+export function replaceLine(args: {
+	fullText: string
+	position: number
+	newLine: string
+}): string {
+	const lines = this.fullText.split('\n')
+	lines[this.position] = this.newLine
+	return lines.join('\n')
 }
 
 /** Returns an invisible character when the text is empty. */
 export function preventEmptyString(text: string): string {
-	return text != "" ? text : "‎";
+	return text != '' ? text : '‎'
 }

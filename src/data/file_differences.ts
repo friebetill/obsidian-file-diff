@@ -1,5 +1,5 @@
-import { ParsedDiff } from "diff";
-import { Difference } from "./difference";
+import { ParsedDiff } from 'diff'
+import { Difference } from './difference'
 
 /**
  * A class that contains the differences between two files.
@@ -29,23 +29,23 @@ export class FileDifferences {
 	 * chose the latter option as it seemed simpler.
 	 */
 	static fromParsedDiff(parsedDiff: ParsedDiff): FileDifferences {
-		const differences: Difference[] = [];
+		const differences: Difference[] = []
 
 		parsedDiff.hunks.forEach((hunk) => {
 			for (let i = 0; i < hunk.lines.length; i++) {
-				const line = hunk.lines[i];
+				const line = hunk.lines[i]
 
-				if (line.startsWith("+") || line.startsWith("-")) {
-					let start = i;
+				if (line.startsWith('+') || line.startsWith('-')) {
+					const start = i
 
 					// Find the end of the contiguous lines
-					let end = i;
+					let end = i
 					while (
 						end < hunk.lines.length - 1 &&
-						(hunk.lines[end + 1].startsWith("+") ||
-							hunk.lines[end + 1].startsWith("-"))
+						(hunk.lines[end + 1].startsWith('+') ||
+							hunk.lines[end + 1].startsWith('-'))
 					) {
-						end++;
+						end++
 					}
 
 					// Add the contiguous lines to the differences
@@ -54,16 +54,16 @@ export class FileDifferences {
 							start: hunk.oldStart + start - 1,
 							lines: hunk.lines.slice(start, end + 1),
 						})
-					);
-					i += end - start;
+					)
+					i += end - start
 				}
 			}
-		});
+		})
 
 		return new this(
 			parsedDiff.oldFileName!,
 			parsedDiff.newFileName!,
 			differences
-		);
+		)
 	}
 }
