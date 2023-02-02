@@ -1,7 +1,5 @@
 import { Editor, Plugin, TFile } from "obsidian";
 
-import { structuredPatch } from "diff";
-import { FileDifferences } from "./data/file_differences";
 import { DifferencesView } from "./differences_view";
 import { SelectFileModal } from "./select_file_modal";
 
@@ -27,31 +25,10 @@ export default class FileDiffPlugin extends Plugin {
 					return;
 				}
 
-				// Create difference between the files
-				const activeFileContent = await this.app.vault.read(activeFile);
-				const compareFileContent = await this.app.vault.read(
-					compareFile
-				);
-				const fileDifferences = FileDifferences.fromParsedDiff(
-					structuredPatch(
-						activeFile.path,
-						compareFile.path,
-						activeFileContent,
-						compareFileContent
-					)
-				);
-
-				// Show difference
+				// Open differences view
 				const workspaceLeaf = this.app.workspace.getLeaf();
 				await workspaceLeaf.open(
-					new DifferencesView(
-						workspaceLeaf,
-						activeFileContent,
-						compareFileContent,
-						activeFile,
-						compareFile,
-						fileDifferences
-					)
+					new DifferencesView(workspaceLeaf, activeFile, compareFile)
 				);
 			},
 		});

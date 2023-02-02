@@ -1,42 +1,64 @@
+import { structuredPatch } from "diff";
 import { ItemView, TFile, WorkspaceLeaf } from "obsidian";
+import { ActionLine } from "./action_line";
 import { Difference } from "./data/difference";
 import { FileDifferences } from "./data/file_differences";
-import { preventEmptyString, replaceLine } from "./utils/string_utils";
+import { preventEmptyString } from "./utils/string_utils";
 
 export const VIEW_TYPE_PATCH = "patch-view";
 
 export class DifferencesView extends ItemView {
-	constructor(
-		leaf: WorkspaceLeaf,
-		public file1Content: string,
-		public file2Content: string,
-		public file1: TFile,
-		public file2: TFile,
-		public fileDifferences: FileDifferences
-	) {
+	constructor(leaf: WorkspaceLeaf, public file1: TFile, public file2: TFile) {
 		super(leaf);
 	}
+
+	private fileDifferences: FileDifferences;
+	private file1Lines: string[];
+	private lineCount: number;
 
 	getViewType() {
 		return VIEW_TYPE_PATCH;
 	}
 
 	getDisplayText() {
-		return `Difference between ${this.fileDifferences.file1Name} and ${this.fileDifferences.file2Name}`;
+		return `Difference between ${this.file1.name} and ${this.file2.name}`;
 	}
 
 	async onOpen() {
-		this.contentEl.empty();
-		const container = this.contentEl.createDiv({ cls: "container" });
-		const lines = this.file1Content.split("\n");
+		await this.updateState();
+		this.build();
+	}
 
-		const lineCount = Math.max(
-			lines.length,
-			...this.fileDifferences.differences.map((d) => d.start)
+	private async updateState() {
+		const file1Content = await this.app.vault.read(this.file1);
+		this.file1Lines = file1Content.split("\n");
+
+		const file2Content = await this.app.vault.read(this.file2);
+		this.fileDifferences = FileDifferences.fromParsedDiff(
+			structuredPatch(
+				this.file1.path,
+				this.file2.path,
+				file1Content,
+				file2Content,
+			)
 		);
 
-		for (let i = 0; i <= lineCount; i++) {
-			let line = i in lines ? lines[i] : null;
+		// Find the highest line number we need to go through. This can be the
+		// highest number in the differences, because the second file can have
+		// more lines than the first file.
+		this.lineCount = Math.max(
+			this.file1Lines.length,
+			...this.fileDifferences.differences.map((d) => d.start)
+		);
+	}
+
+	private build() {
+		this.contentEl.empty();
+
+		const container = this.contentEl.createDiv({ cls: "container" });
+
+		for (let i = 0; i <= this.lineCount; i++) {
+			let line = i in this.file1Lines ? this.file1Lines[i] : null;
 			const difference = this.fileDifferences.differences.find(
 				(d) => d.start === i
 			);
@@ -61,7 +83,12 @@ export class DifferencesView extends ItemView {
 		container: HTMLDivElement,
 		difference: Difference
 	) {
-		this.buildActionLine(container, difference);
+		new ActionLine(
+			difference,
+			this.file1,
+			this.file2,
+			this.triggerRebuild
+		).build(container);
 
 		difference.lines.forEach((line) => {
 			if (line.startsWith("+")) {
@@ -78,171 +105,6 @@ export class DifferencesView extends ItemView {
 				});
 			}
 		});
-	}
-
-	private buildActionLine(container: HTMLDivElement, difference: Difference) {
-		const actionLine = container.createDiv({ cls: "flex-row gap-2 py-2" });
-
-		const hasPlusLines = difference.lines.some((l) => l.startsWith("+"));
-		const hasMinusLines = difference.lines.some((l) => l.startsWith("-"));
-
-		if (hasPlusLines && hasMinusLines) {
-			this.buildActionLineButton(actionLine, "Accept Top", (e) =>
-				this.handleAcceptTopClick(e, difference)
-			);
-			this.buildActionLineDivider(actionLine);
-			this.buildActionLineButton(actionLine, "Accept Bottom", (e) =>
-				this.handleAcceptBottomClick(e, difference)
-			);
-			this.buildActionLineDivider(actionLine);
-			this.buildActionLineButton(actionLine, "Accept All", (e) =>
-				this.handleAcceptAllClick(e, difference)
-			);
-		} else if (hasMinusLines) {
-			this.buildActionLineButton(
-				actionLine,
-				`Accept from ${this.fileDifferences.file1Name}`,
-				(e) => this.handleAcceptTopClick(e, difference)
-			);
-			this.buildActionLineDivider(actionLine);
-			this.buildActionLineButton(actionLine, `Discard`, (e) =>
-				this.handleDiscardClick(e, difference)
-			);
-		} else if (hasPlusLines) {
-			this.buildActionLineButton(
-				actionLine,
-				`Accept from ${this.fileDifferences.file2Name}`,
-				(e) => this.handleAcceptTopClick(e, difference)
-			);
-			this.buildActionLineDivider(actionLine);
-			this.buildActionLineButton(actionLine, `Discard`, (e) =>
-				this.handleDiscardClick(e, difference)
-			);
-		}
-	}
-
-	private buildActionLineButton(
-		actionLine: HTMLDivElement,
-		text: string,
-		onClick: (event: MouseEvent) => void
-	) {
-		actionLine
-			.createEl("a", { text, cls: "no-decoration text-xxs text-gray" })
-			.onClickEvent(onClick);
-	}
-
-	private buildActionLineDivider(actionLine: HTMLDivElement) {
-		actionLine.createEl("span", { text: "|", cls: "text-xxs text-gray" });
-	}
-
-	private async handleAcceptTopClick(
-		event: MouseEvent,
-		difference: Difference
-	): Promise<void> {
-		event.preventDefault();
-
-		const file1Content = await this.app.vault.read(this.file1);
-		const changedLines = difference.lines
-			.filter((line) => line.startsWith("-"))
-			.map((line) => line.slice(1, line.length))
-			.join("\n");
-		const minusPlusLinesCount = difference.lines.findIndex(
-			(line) => line.startsWith("-") || line.startsWith("+")
-		);
-		const newContent = replaceLine(
-			file1Content,
-			difference.start - 1 + minusPlusLinesCount,
-			changedLines
-		);
-		await this.app.vault.modify(this.file1, newContent);
-
-		this.fileDifferences.differences.remove(difference);
-
-		this.file1Content = newContent;
-
-		this.triggerRebuild();
-	}
-
-	private async handleAcceptBottomClick(
-		event: MouseEvent,
-		difference: Difference
-	): Promise<void> {
-		event.preventDefault();
-
-		const file1Content = await this.app.vault.read(this.file1);
-		const changedLines = difference.lines
-			.filter((line) => line.startsWith("+"))
-			.map((line) => line.slice(1, line.length))
-			.join("\n");
-		const minusPlusLinesCount = difference.lines.findIndex(
-			(line) => line.startsWith("-") || line.startsWith("+")
-		);
-		const newContent = replaceLine(
-			file1Content,
-			difference.start - 1 + minusPlusLinesCount,
-			changedLines
-		);
-		await this.app.vault.modify(this.file1, newContent);
-
-		this.fileDifferences.differences.remove(difference);
-
-		this.file1Content = newContent;
-
-		this.triggerRebuild();
-	}
-
-	private async handleAcceptAllClick(
-		event: MouseEvent,
-		difference: Difference
-	): Promise<void> {
-		event.preventDefault();
-
-		const file1Content = await this.app.vault.read(this.file1);
-		const changedLines = difference.lines
-			.filter((line) => line.startsWith("-") || line.startsWith("+"))
-			.map((line) => line.slice(1, line.length))
-			.join("\n");
-
-		const minusPlusLinesCount = difference.lines.findIndex(
-			(line) => line.startsWith("-") || line.startsWith("+")
-		);
-		const newContent = replaceLine(
-			file1Content,
-			difference.start - 1 + minusPlusLinesCount,
-			changedLines
-		);
-		await this.app.vault.modify(this.file1, newContent);
-
-		this.fileDifferences.differences.remove(difference);
-
-		this.file1Content = newContent;
-
-		this.triggerRebuild();
-	}
-
-	async handleDiscardClick(
-		event: MouseEvent,
-		difference: Difference
-	): Promise<void> {
-		event.preventDefault();
-
-		const file1Content = await this.app.vault.read(this.file1);
-
-		const minusPlusLinesCount = difference.lines.findIndex(
-			(line) => line.startsWith("-") || line.startsWith("+")
-		);
-		const newContent = replaceLine(
-			file1Content,
-			difference.start - 1 + minusPlusLinesCount,
-			""
-		);
-		await this.app.vault.modify(this.file1, newContent);
-
-		this.fileDifferences.differences.remove(difference);
-
-		this.file1Content = newContent;
-
-		this.triggerRebuild();
 	}
 
 	private triggerRebuild() {
