@@ -5,7 +5,7 @@ import { Difference } from "./difference";
  * A class that contains the differences between two files.
  */
 export class FileDifferences {
-	constructor(
+	private constructor(
 		public file1Name: string,
 		public file2Name: string,
 		public differences: Difference[]
@@ -50,10 +50,10 @@ export class FileDifferences {
 
 					// Add the contiguous lines to the differences
 					differences.push(
-						new Difference(
-							hunk.oldStart + start - 1,
-							hunk.lines.slice(start, end + 1)
-						)
+						new Difference({
+							start: hunk.oldStart + start - 1,
+							lines: hunk.lines.slice(start, end + 1),
+						})
 					);
 					i += end - start;
 				}

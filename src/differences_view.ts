@@ -8,9 +8,21 @@ import { preventEmptyString } from "./utils/string_utils";
 export const VIEW_TYPE_PATCH = "patch-view";
 
 export class DifferencesView extends ItemView {
-	constructor(leaf: WorkspaceLeaf, public file1: TFile, public file2: TFile) {
-		super(leaf);
+	constructor(args: {
+		leaf: WorkspaceLeaf;
+		file1: TFile;
+		file2: TFile;
+		showMergeOption: boolean;
+	}) {
+		super(args.leaf);
+		this.file1 = args.file1;
+		this.file2 = args.file2;
+		this.showMergeOption = args.showMergeOption;
 	}
+
+	private file1: TFile;
+	private file2: TFile;
+	private showMergeOption: boolean;
 
 	private fileDifferences: FileDifferences;
 	private file1Lines: string[];
@@ -85,12 +97,14 @@ export class DifferencesView extends ItemView {
 	) {
 		const triggerRebuild = () => this.onOpen();
 
-		new ActionLine(
-			difference,
-			this.file1,
-			this.file2,
-			triggerRebuild
-		).build(container);
+		if (this.showMergeOption) {
+			new ActionLine({
+				difference: difference,
+				file1: this.file1,
+				file2: this.file2,
+				triggerRebuild: triggerRebuild,
+			}).build(container);
+		}
 
 		difference.lines.forEach((line) => {
 			if (line.startsWith("+")) {

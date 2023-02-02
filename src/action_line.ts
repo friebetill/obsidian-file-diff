@@ -5,12 +5,22 @@ import { replaceLine } from "./utils/string_utils";
 type VoidCallback = () => void;
 
 export class ActionLine {
-	constructor(
-		private difference: Difference,
-		private file1: TFile,
-		private file2: TFile,
-		private triggerRebuild: VoidCallback
-	) {}
+	constructor(args: {
+		difference: Difference;
+		file1: TFile;
+		file2: TFile;
+		triggerRebuild: VoidCallback;
+	}) {
+		this.difference = args.difference;
+		this.file1 = args.file1;
+		this.file2 = args.file2;
+		this.triggerRebuild = args.triggerRebuild;
+	}
+
+	private difference: Difference;
+	private file1: TFile;
+	private file2: TFile;
+	private triggerRebuild: VoidCallback;
 
 	build(container: HTMLDivElement) {
 		const actionLine = container.createDiv({ cls: "flex-row gap-2 py-2" });

@@ -1,5 +1,11 @@
 export class Difference {
-	constructor(public start: number, public lines: string[]) {}
+	constructor(args: { start: number; lines: string[] }) {
+		this.start = args.start;
+		this.lines = args.lines;
+	}
+
+	public readonly start: number;
+	public readonly lines: string[];
 
 	hasChangesFromFile1(): boolean {
 		return this.lines.some((l) => l.startsWith("-"));
