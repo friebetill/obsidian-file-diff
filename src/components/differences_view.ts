@@ -79,7 +79,7 @@ export class DifferencesView extends ItemView {
 
 		const container = this.contentEl.createDiv({ cls: 'container' })
 
-		for (let i = 0; i <= this.lineCount; i++) {
+		for (let i = 0; i <= this.lineCount; i += 1) {
 			const line = i in this.file1Lines ? this.file1Lines[i] : null
 			const difference = this.fileDifferences.differences.find(
 				(d) => d.start === i

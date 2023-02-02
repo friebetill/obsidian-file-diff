@@ -5,11 +5,21 @@ import { Difference } from './difference'
  * A class that contains the differences between two files.
  */
 export class FileDifferences {
-	private constructor(
-		public file1Name: string,
-		public file2Name: string,
-		public differences: Difference[]
-	) {}
+	private constructor(args: {
+		file1Name?: string
+		file2Name?: string
+		differences: Difference[]
+	}) {
+		this.file1Name = args.file1Name
+		this.file2Name = args.file2Name
+		this.differences = args.differences
+	}
+
+	public readonly file1Name?: string
+
+	public readonly file2Name?: string
+
+	public readonly differences: Difference[]
 
 	/**
 	 * Returns a FileDifferences object from the given ParsedDiff instance.
@@ -32,7 +42,7 @@ export class FileDifferences {
 		const differences: Difference[] = []
 
 		parsedDiff.hunks.forEach((hunk) => {
-			for (let i = 0; i < hunk.lines.length; i++) {
+			for (let i = 0; i < hunk.lines.length; i += 1) {
 				const line = hunk.lines[i]
 
 				if (line.startsWith('+') || line.startsWith('-')) {
@@ -45,7 +55,7 @@ export class FileDifferences {
 						(hunk.lines[end + 1].startsWith('+') ||
 							hunk.lines[end + 1].startsWith('-'))
 					) {
-						end++
+						end += 1
 					}
 
 					// Add the contiguous lines to the differences
@@ -60,10 +70,10 @@ export class FileDifferences {
 			}
 		})
 
-		return new this(
-			parsedDiff.oldFileName!,
-			parsedDiff.newFileName!,
-			differences
-		)
+		return new this({
+			file1Name: parsedDiff.oldFileName,
+			file2Name: parsedDiff.newFileName,
+			differences,
+		})
 	}
 }
