@@ -22,6 +22,7 @@
 	"rules": {
 		"class-methods-use-this": "off",
 		"no-use-before-define": "off",
+		"no-warning-comments": 1,
 		"@typescript-eslint/no-use-before-define": ["error"],
 		"react/jsx-filename-extension": [
 			"warn",

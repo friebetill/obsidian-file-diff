@@ -1,13 +1,13 @@
 import { Plugin, TFile } from 'obsidian'
 
 import { DifferencesView } from './components/differences_view'
-import { SelectFileModal } from './components/select_file_modal'
+import { SelectFileModal } from './components/modals/select_file_modal'
 
 export default class FileDiffPlugin extends Plugin {
 	onload(): void {
 		this.addCommand({
 			id: 'file-diff',
-			name: 'Show differences to another file',
+			name: 'Compare',
 			editorCallback: async () => {
 				// Get current active file
 				const activeFile = this.app.workspace.getActiveFile()
@@ -36,7 +36,7 @@ export default class FileDiffPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'file-diff-merge',
-			name: 'Show differences and merge options to another file',
+			name: 'Compare and merge',
 			editorCallback: async () => {
 				// TODO(tillf): Show warning when the user selects this option
 				//              for the first time
@@ -79,12 +79,10 @@ export default class FileDiffPlugin extends Plugin {
 		selectableFiles: TFile[]
 	}): Promise<TFile | undefined> {
 		return new Promise((resolve, reject) => {
-			new SelectFileModal(
-				this.app,
-				args.selectableFiles,
-				(error, selectedFile) =>
-					error ? reject(error) : resolve(selectedFile)
-			).open()
+			new SelectFileModal({
+				selectableFiles: args.selectableFiles,
+				onChoose: (e, f) => (e ? reject(e) : resolve(f)),
+			}).open()
 		})
 	}
 }

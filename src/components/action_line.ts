@@ -1,6 +1,6 @@
 import { TFile } from 'obsidian'
 import { Difference } from '../data/difference'
-import { replaceLine } from '../utils/string_utils'
+import { deleteLines, replaceLine } from '../utils/string_utils'
 import { ActionLineButton } from './action_line_button'
 import { ActionLineDivider } from './action_line_divider'
 
@@ -157,10 +157,10 @@ export class ActionLine {
 	): Promise<void> {
 		event.preventDefault()
 
-		const newContent = replaceLine({
+		const newContent = deleteLines({
 			fullText: this.file1Content,
-			newLine: '',
 			position: difference.file1Start,
+			count: difference.lines.length,
 		})
 		await app.vault.modify(this.file1, newContent)
 
@@ -173,10 +173,10 @@ export class ActionLine {
 	): Promise<void> {
 		event.preventDefault()
 
-		const newContent = replaceLine({
+		const newContent = deleteLines({
 			fullText: this.file2Content,
-			newLine: '',
 			position: difference.file2Start,
+			count: difference.lines.length,
 		})
 		await app.vault.modify(this.file2, newContent)
 

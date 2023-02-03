@@ -1,17 +1,22 @@
-/** Method to replace line in a string */
+/** Method to replace a line in a string */
 export function replaceLine(args: {
 	fullText: string
 	newLine: string
 	position: number
 }): string {
 	const lines = args.fullText.split('\n')
+	lines[args.position] = args.newLine
+	return lines.join('\n')
+}
 
-	if (args.newLine.length === 0) {
-		lines.splice(args.position, 1)
-	} else {
-		lines[args.position] = args.newLine
-	}
-
+/** Method to delete a line in a string */
+export function deleteLines(args: {
+	fullText: string
+	position: number
+	count: number
+}): string {
+	const lines = args.fullText.split('\n')
+	lines.splice(args.position, args.count)
 	return lines.join('\n')
 }
 

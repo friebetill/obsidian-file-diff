@@ -4,6 +4,7 @@ import { Difference } from '../data/difference'
 import { FileDifferences } from '../data/file_differences'
 import { preventEmptyString } from '../utils/string_utils'
 import { ActionLine } from './action_line'
+import { DeleteFileModal } from './modals/delete_file_modal'
 
 export const VIEW_TYPE_PATCH = 'patch-view'
 
@@ -35,6 +36,8 @@ export class DifferencesView extends ItemView {
 	private file1Lines: string[]
 
 	private lineCount: number
+
+	private wasDeleteModalShown = false
 
 	getViewType(): string {
 		return VIEW_TYPE_PATCH
@@ -100,8 +103,13 @@ export class DifferencesView extends ItemView {
 			}
 		}
 
-		// TODO(tillf): Show delete second file modal if showMergeOption is
-		//              enabled and there are no more differences
+		if (
+			this.fileDifferences.differences.length === 0 &&
+			this.showMergeOption &&
+			!this.wasDeleteModalShown
+		) {
+			this.showDeleteModal()
+		}
 	}
 
 	private buildDifferenceVisualizer(
@@ -135,6 +143,25 @@ export class DifferencesView extends ItemView {
 					cls: 'line bg-blue-light',
 				})
 			}
+		})
+	}
+
+	async showDeleteModal(): Promise<void> {
+		// Wait a moment to avoid appearing overly aggressive with the modal
+		await this.delay(200)
+
+		return new Promise((resolve, reject) => {
+			new DeleteFileModal({
+				file1: this.file1,
+				file2: this.file2,
+				onDone: (e) => (e ? reject(e) : resolve()),
+			}).open()
+		})
+	}
+
+	delay(ms: number): Promise<void> {
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms)
 		})
 	}
 }

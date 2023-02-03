@@ -1,13 +1,18 @@
-import { App, SuggestModal, TFile } from 'obsidian'
+import { SuggestModal, TFile } from 'obsidian'
 
 export class SelectFileModal extends SuggestModal<TFile> {
-	constructor(
-		app: App,
-		private readonly selectableFiles: TFile[],
-		private onChoose: (error: Error | null, result?: TFile) => void
-	) {
+	constructor(args: {
+		selectableFiles: TFile[]
+		onChoose: (error: Error | null, result?: TFile) => void
+	}) {
 		super(app)
+		this.selectableFiles = args.selectableFiles
+		this.onChoose = args.onChoose
 	}
+
+	private readonly selectableFiles: TFile[]
+
+	private readonly onChoose: (error: Error | null, result?: TFile) => void
 
 	getSuggestions(query: string): TFile[] {
 		return this.selectableFiles.filter((file) => {
