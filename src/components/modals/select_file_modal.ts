@@ -15,10 +15,12 @@ export class SelectFileModal extends SuggestModal<TFile> {
 	private readonly onChoose: (error: Error | null, result?: TFile) => void
 
 	getSuggestions(query: string): TFile[] {
-		return this.selectableFiles.filter((file) => {
-			const searchQuery = query?.toLowerCase()
-			return file.name?.toLowerCase().includes(searchQuery)
-		})
+		return this.selectableFiles
+			.filter((file) => {
+				const searchQuery = query?.toLowerCase()
+				return file.name?.toLowerCase().includes(searchQuery)
+			})
+			.sort((a, b) => (a.stat.mtime < b.stat.mtime ? 1 : -1))
 	}
 
 	renderSuggestion(file: TFile, el: HTMLElement): void {
