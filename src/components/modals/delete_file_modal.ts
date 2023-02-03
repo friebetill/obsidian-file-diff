@@ -20,6 +20,9 @@ export class DeleteFileModal extends Modal {
 	private readonly onDone: (error: Error | null) => void
 
 	onOpen(): void {
+		// Counteract gravity pull by moving box up for balanced composition
+		this.modalEl.addClass('mb-16')
+
 		this.contentEl.createEl('h2', {
 			text: `Delete "${this.file2.name}"?`,
 		})

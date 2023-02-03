@@ -81,6 +81,10 @@
 	margin-right: 8px;
 }
 
+.mb-16 {
+	margin-bottom: 80px;
+}
+
 .text-gray {
 	color: #919191;
 }
