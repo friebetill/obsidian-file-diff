@@ -45,7 +45,7 @@ export class DeleteFileModal extends Modal {
 			cls: 'button-danger',
 		})
 		deleteButton.addEventListener('click', () => {
-			// this.app.vault.delete(this.file2)
+			this.app.vault.delete(this.file2)
 
 			this.close()
 			// Close currently active file
