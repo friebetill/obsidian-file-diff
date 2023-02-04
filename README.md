@@ -39,6 +39,6 @@ pull request.
 
 ## Support
 
-For support, please open an issue on the repository.
+For support, please open an issue on the repository, with a reproducible example if possible.
 
 If you're interested in supporting me, it would mean a lot if you could buy me a coffee through GitHub Sponsors, located on the right side.
