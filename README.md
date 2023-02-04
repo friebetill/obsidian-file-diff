@@ -20,7 +20,7 @@ Test on Android and iOS. Tested with Obsidian v0.15.0 or higher.
 
 ## Installation
 
-At the moment, the [plugin is in review to be an official plugin](https://github.com/obsidianmd/obsidian-releases/pull/1621). Therefore, it must be installed manually:
+At the moment, the [plugin is in review to be an official plugin](https://github.com/obsidianmd/obsidian-releases/pull/1621) (add a like to get it merged faster). Therefore, it must be installed manually:
 
 1. Download the `main.js`, `styles.css` and `manifest.json` from [the latest release](https://github.com/friebetill/obsidian-file-diff/releases/latest)
 2. Move the files to the plugin folder `VaultFolder/.obsidian/plugins/obsidian-file-diff/`
