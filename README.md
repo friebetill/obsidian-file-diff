@@ -16,7 +16,7 @@ Test on Android and iOS. Tested with Obsidian v0.15.0 or higher.
 
 ## Installation
 
-At the moment, the plugin is not yet available as an official plugin. Therefore, it must be installed manually:
+At the moment, the [plugin is in review to be an official plugin](https://github.com/obsidianmd/obsidian-releases/pull/1621). Therefore, it must be installed manually:
 
 1. Download the repository as a zip file
 2. Unzip the file
