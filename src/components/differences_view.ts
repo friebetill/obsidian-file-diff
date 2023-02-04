@@ -116,7 +116,10 @@ export class DifferencesView extends ItemView {
 		container: HTMLDivElement,
 		difference: Difference
 	): void {
-		const triggerRebuild = (): Promise<void> => this.onOpen()
+		const triggerRebuild = async (): Promise<void> => {
+			await this.updateState()
+			this.build()
+		}
 
 		if (this.showMergeOption) {
 			new ActionLine({

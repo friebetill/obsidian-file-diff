@@ -1,9 +1,12 @@
 import { Plugin, TFile } from 'obsidian'
 
 import { DifferencesView } from './components/differences_view'
+import { RiskyActionModal } from './components/modals/risky_action_modal'
 import { SelectFileModal } from './components/modals/select_file_modal'
 
 export default class FileDiffPlugin extends Plugin {
+	fileDiffMergeWarningKey = 'file-diff-merge-warning'
+
 	onload(): void {
 		this.addCommand({
 			id: 'file-diff',
@@ -38,8 +41,13 @@ export default class FileDiffPlugin extends Plugin {
 			id: 'file-diff-merge',
 			name: 'Compare and merge',
 			editorCallback: async () => {
-				// TODO(tillf): Show warning when the user selects this option
-				//              for the first time
+				// Show warning when this option is selected for the first time
+				if (!localStorage.getItem(this.fileDiffMergeWarningKey)) {
+					this.showRiskyActionModal()
+					if (!localStorage.getItem(this.fileDiffMergeWarningKey)) {
+						return
+					}
+				}
 
 				// Get current active file
 				const activeFile = this.app.workspace.getActiveFile()
@@ -82,6 +90,24 @@ export default class FileDiffPlugin extends Plugin {
 			new SelectFileModal({
 				selectableFiles: args.selectableFiles,
 				onChoose: (e, f) => (e ? reject(e) : resolve(f)),
+			}).open()
+		})
+	}
+
+	showRiskyActionModal(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			new RiskyActionModal({
+				onAccept: (e: Error | null) => {
+					if (e) {
+						reject(e)
+					} else {
+						localStorage.setItem(
+							this.fileDiffMergeWarningKey,
+							'true'
+						)
+						resolve()
+					}
+				},
 			}).open()
 		})
 	}
