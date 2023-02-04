@@ -64,8 +64,9 @@ export class DifferencesView extends ItemView {
 			structuredPatch(
 				this.file1.path,
 				this.file2.path,
-				this.file1Content,
-				this.file2Content
+				// Ignore empty lines at the end as they are difficult to handle
+				this.file1Content.trimEnd(),
+				this.file2Content.trimEnd()
 			)
 		)
 
@@ -160,12 +161,6 @@ export class DifferencesView extends ItemView {
 				file2: this.file2,
 				onDone: (e) => (e ? reject(e) : resolve()),
 			}).open()
-		})
-	}
-
-	delay(ms: number): Promise<void> {
-		return new Promise((resolve) => {
-			setTimeout(resolve, ms)
 		})
 	}
 }
