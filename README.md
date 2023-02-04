@@ -7,7 +7,7 @@
 
 `Compare`: Compare your active file with another file and look at the differences.
 
-`Compare and merge`: Compare your active file with another file and look at the differences. You'll then have the chance to choose which changes you'd like to keep.
+`Compare and merge`: Same as `Compare`, but you have the option to merge changes.
 
 <img
 src="https://user-images.githubusercontent.com/10923085/216749496-27f0b241-c05b-4aec-ba88-a7c8c91938a6.gif"
