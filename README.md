@@ -2,13 +2,12 @@
 
 <!-- [![Obsidian Downloads](https://img.shields.io/badge/dynamic/json?color=7e6ad6&labelColor=34208c&label=Obsidian%20Downloads&query=$['file-diff'].downloads&url=https://raw.githubusercontent.com/obsidianmd/obsidian-releases/master/community-plugin-stats.json&)](obsidian://show-plugin?id=file-diff) -->
 ![GitHub stars](https://img.shields.io/github/stars/friebetill/obsidian-file-diff?style=flat)
-## ⚠️ This plugin is in development and not working at the moment. ⚠️
 
-## Purpose
+## Commands
 
-This plugin adds a file difference command to [Obsidian](https://obsidian.md/),
-allowing users to compare and merge changes between different versions of a
-file.
+`Compare`: Compare your active file with another file and look at the differences.
+
+`Compare and merge`: Compare your active file with another file and look at the differences. You'll then have the chance to choose which changes you'd like to keep.
 
 ## Compatibility
 
@@ -43,11 +42,12 @@ To use the plugin, follow these steps:
 2. Open the command palette (Ctrl/Cmd + P)
 3. Search for "File Diff"
 4. Select the file you want to compare with the current file
+
 ## Demo
 
 <img
-src="https://user-images.githubusercontent.com/10923085/216142663-703e489e-6f47-4193-8e69-20c7fdfd6f61.gif"
-alt="GIF of a demo show this plugin" height="400" />
+src="https://user-images.githubusercontent.com/10923085/216749496-27f0b241-c05b-4aec-ba88-a7c8c91938a6.gif"
+alt="GIF of a demo show this plugin" width="900" />
 
 ## Contributing
 
@@ -58,3 +58,5 @@ pull request.
 ## Support
 
 For support, please open an issue on the repository.
+
+If you're interested in supporting me, it would mean a lot if you could buy me a coffee through GitHub Sponsors, located on the right side.
