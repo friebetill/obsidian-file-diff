@@ -27,13 +27,9 @@ At the moment, the [plugin is in review to be an official plugin](https://github
 
 When the plugin is officially release you can follow these steps to install the plugin:
 
-1. Open Obsidian
-2. Click on the "Settings" icon in the bottom left corner
-3. Click on "Community plugins"
-4. Click on "Browse"
-5. Search for "File Diff"
-6. Click on "Install"
-7. Click on "Enable"
+1. Search for "File Diff" in the community plugins of Obsidian
+2. Install the plugin
+3. Enable the plugin
 
 ## Contributing
 
