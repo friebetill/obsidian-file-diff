@@ -9,6 +9,10 @@
 
 `Compare and merge`: Compare your active file with another file and look at the differences. You'll then have the chance to choose which changes you'd like to keep.
 
+<img
+src="https://user-images.githubusercontent.com/10923085/216749496-27f0b241-c05b-4aec-ba88-a7c8c91938a6.gif"
+alt="GIF of a demo show this plugin" width="900" />
+
 ## Compatibility
 
 Compatible with all platforms (Windows, Linux, macOS, Android and iOS). TODO:
@@ -18,11 +22,8 @@ Test on Android and iOS. Tested with Obsidian v0.15.0 or higher.
 
 At the moment, the [plugin is in review to be an official plugin](https://github.com/obsidianmd/obsidian-releases/pull/1621). Therefore, it must be installed manually:
 
-1. Download the repository as a zip file
-2. Unzip the file
-3. Install node modules with `yarn install`
-4. Build the plugin with `yarn build`
-5. Copy `main.js`, `styles.css` and `manifest.json` in your plugin folder `VaultFolder/.obsidian/plugins/obsidian-file-diff/`
+1. Download the `main.js`, `styles.css` and `manifest.json` from [the latest release](https://github.com/friebetill/obsidian-file-diff/releases/latest)
+2. Move the files to the plugin folder `VaultFolder/.obsidian/plugins/obsidian-file-diff/`
 
 When the plugin is officially release you can follow these steps to install the plugin:
 
@@ -33,21 +34,6 @@ When the plugin is officially release you can follow these steps to install the 
 5. Search for "File Diff"
 6. Click on "Install"
 7. Click on "Enable"
-
-## Usage
-
-To use the plugin, follow these steps:
-
-1. Open a file in Obsidian
-2. Open the command palette (Ctrl/Cmd + P)
-3. Search for "File Diff"
-4. Select the file you want to compare with the current file
-
-## Demo
-
-<img
-src="https://user-images.githubusercontent.com/10923085/216749496-27f0b241-c05b-4aec-ba88-a7c8c91938a6.gif"
-alt="GIF of a demo show this plugin" width="900" />
 
 ## Contributing
 
