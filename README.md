@@ -43,10 +43,11 @@ To use the plugin, follow these steps:
 2. Open the command palette (Ctrl/Cmd + P)
 3. Search for "File Diff"
 4. Select the file you want to compare with the current file
+
 ## Demo
 
 <img
-src="https://user-images.githubusercontent.com/10923085/216142663-703e489e-6f47-4193-8e69-20c7fdfd6f61.gif"
+src="https://user-images.githubusercontent.com/10923085/216749496-27f0b241-c05b-4aec-ba88-a7c8c91938a6.gif"
 alt="GIF of a demo show this plugin" height="400" />
 
 ## Contributing
