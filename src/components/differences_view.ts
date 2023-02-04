@@ -64,9 +64,9 @@ export class DifferencesView extends ItemView {
 			structuredPatch(
 				this.file1.path,
 				this.file2.path,
-				// Ignore empty lines at the end as they are difficult to handle
-				this.file1Content.trimEnd(),
-				this.file2Content.trimEnd()
+				// Streamline empty lines at the end as this remove edge cases
+				this.file1Content.trimEnd().concat('\n'),
+				this.file2Content.trimEnd().concat('\n')
 			)
 		)
 
