@@ -73,7 +73,7 @@ export class ActionLine {
 		} else if (hasPlusLines) {
 			new ActionLineButton({
 				text: `Accept from ${this.file2.name}`,
-				onClick: (e) => this.acceptTopClick(e, this.difference),
+				onClick: (e) => this.acceptBottomClick(e, this.difference),
 			}).build(actionLine)
 			ActionLineDivider.build(actionLine)
 			new ActionLineButton({
