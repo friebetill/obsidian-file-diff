@@ -3,6 +3,7 @@ import { Plugin, TFile } from 'obsidian'
 import { DifferencesView } from './components/differences_view'
 import { RiskyActionModal } from './components/modals/risky_action_modal'
 import { SelectFileModal } from './components/modals/select_file_modal'
+import { delay } from './utils/delay'
 
 export default class FileDiffPlugin extends Plugin {
 	fileDiffMergeWarningKey = 'file-diff-merge-warning'
@@ -43,7 +44,7 @@ export default class FileDiffPlugin extends Plugin {
 			editorCallback: async () => {
 				// Show warning when this option is selected for the first time
 				if (!localStorage.getItem(this.fileDiffMergeWarningKey)) {
-					this.showRiskyActionModal()
+					await this.showRiskyActionModal()
 					if (!localStorage.getItem(this.fileDiffMergeWarningKey)) {
 						return
 					}
@@ -97,7 +98,7 @@ export default class FileDiffPlugin extends Plugin {
 	showRiskyActionModal(): Promise<void> {
 		return new Promise((resolve, reject) => {
 			new RiskyActionModal({
-				onAccept: (e: Error | null) => {
+				onAccept: async (e: Error | null) => {
 					if (e) {
 						reject(e)
 					} else {
@@ -105,6 +106,9 @@ export default class FileDiffPlugin extends Plugin {
 							this.fileDiffMergeWarningKey,
 							'true'
 						)
+						// Wait for the set item dispatch event to be processed
+						await delay(50)
+
 						resolve()
 					}
 				},

@@ -1,5 +1,6 @@
 import { structuredPatch } from 'diff'
 import { ItemView, TFile, WorkspaceLeaf } from 'obsidian'
+import { delay } from 'src/utils/delay'
 import { Difference } from '../data/difference'
 import { FileDifferences } from '../data/file_differences'
 import { preventEmptyString } from '../utils/string_utils'
@@ -151,7 +152,7 @@ export class DifferencesView extends ItemView {
 
 	async showDeleteModal(): Promise<void> {
 		// Wait a moment to avoid appearing overly aggressive with the modal
-		await this.delay(200)
+		await delay(200)
 
 		return new Promise((resolve, reject) => {
 			new DeleteFileModal({
