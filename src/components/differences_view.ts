@@ -91,7 +91,10 @@ export class DifferencesView extends ItemView {
 			)
 
 			if (difference != null) {
-				this.buildDifferenceVisualizer(container, difference)
+				const differenceContainer = container.createDiv({
+					cls: 'difference',
+				})
+				this.buildDifferenceVisualizer(differenceContainer, difference)
 			}
 			if (
 				line != null &&
@@ -103,6 +106,19 @@ export class DifferencesView extends ItemView {
 					cls: 'line',
 				})
 			}
+		}
+
+		if (this.fileDifferences.differences.length > 0) {
+			const containerRect = this.contentEl
+				.getElementsByClassName('container')[0]
+				.getBoundingClientRect()
+			const elementRect = this.contentEl
+				.getElementsByClassName('difference')[0]
+				.getBoundingClientRect()
+			this.contentEl.scrollTo({
+				top: elementRect.top - containerRect.top - 100,
+				behavior: 'smooth',
+			})
 		}
 
 		if (
