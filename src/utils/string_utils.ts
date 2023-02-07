@@ -1,3 +1,14 @@
+/** Method to insert a line in a string */
+export function insertLine(args: {
+	fullText: string
+	newLine: string
+	position: number
+}): string {
+	const lines = args.fullText.split('\n')
+	lines.splice(args.position, 0, args.newLine)
+	return lines.join('\n')
+}
+
 /** Method to replace a line in a string */
 export function replaceLine(args: {
 	fullText: string

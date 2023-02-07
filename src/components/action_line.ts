@@ -1,6 +1,6 @@
 import { TFile } from 'obsidian'
 import { Difference } from '../data/difference'
-import { deleteLines, replaceLine } from '../utils/string_utils'
+import { deleteLines, insertLine, replaceLine } from '../utils/string_utils'
 import { ActionLineButton } from './action_line_button'
 import { ActionLineDivider } from './action_line_divider'
 
@@ -60,7 +60,7 @@ export class ActionLine {
 		} else if (hasMinusLines) {
 			new ActionLineButton({
 				text: `Accept from ${this.file1.name}`,
-				onClick: (e) => this.acceptTopClick(e, this.difference),
+				onClick: (e) => this.insertFile1Difference(e, this.difference),
 			}).build(actionLine)
 			ActionLineDivider.build(actionLine)
 			new ActionLineButton({
@@ -70,7 +70,7 @@ export class ActionLine {
 		} else if (hasPlusLines) {
 			new ActionLineButton({
 				text: `Accept from ${this.file2.name}`,
-				onClick: (e) => this.acceptBottomClick(e, this.difference),
+				onClick: (e) => this.insertFile2Difference(e, this.difference),
 			}).build(actionLine)
 			ActionLineDivider.build(actionLine)
 			new ActionLineButton({
@@ -138,6 +138,40 @@ export class ActionLine {
 			position: difference.file2Start,
 		})
 		await app.vault.modify(this.file2, newFile2Content)
+
+		this.triggerRebuild()
+	}
+
+	private async insertFile1Difference(
+		event: MouseEvent,
+		difference: Difference
+	): Promise<void> {
+		event.preventDefault()
+
+		const changedLines = difference.file1Lines.join('\n')
+		const newContent = insertLine({
+			fullText: this.file2Content,
+			newLine: changedLines,
+			position: difference.file2Start,
+		})
+		await app.vault.modify(this.file2, newContent)
+
+		this.triggerRebuild()
+	}
+
+	private async insertFile2Difference(
+		event: MouseEvent,
+		difference: Difference
+	): Promise<void> {
+		event.preventDefault()
+
+		const changedLines = difference.file2Lines.join('\n')
+		const newContent = insertLine({
+			fullText: this.file1Content,
+			newLine: changedLines,
+			position: difference.file1Start,
+		})
+		await app.vault.modify(this.file1, newContent)
 
 		this.triggerRebuild()
 	}
