@@ -56,7 +56,11 @@ export class ActionLine {
 				text: 'Accept All',
 				onClick: (e) => this.acceptAllClick(e, this.difference),
 			}).build(actionLine)
-			// TODO(tillf): Add button to accept none of the changes
+			ActionLineDivider.build(actionLine)
+			new ActionLineButton({
+				text: 'Accept None',
+				onClick: (e) => this.acceptNoneClick(e, this.difference),
+			}).build(actionLine)
 		} else if (hasMinusLines) {
 			new ActionLineButton({
 				text: `Accept from ${this.file1.name}`,
@@ -136,6 +140,29 @@ export class ActionLine {
 			fullText: this.file2Content,
 			newLine: changedLines,
 			position: difference.file2Start,
+		})
+		await app.vault.modify(this.file2, newFile2Content)
+
+		this.triggerRebuild()
+	}
+
+	private async acceptNoneClick(
+		event: MouseEvent,
+		difference: Difference
+	): Promise<void> {
+		event.preventDefault()
+
+		const newFile1Content = deleteLines({
+			fullText: this.file1Content,
+			position: difference.file1Start,
+			count: difference.file1Lines.length,
+		})
+		await app.vault.modify(this.file1, newFile1Content)
+
+		const newFile2Content = deleteLines({
+			fullText: this.file2Content,
+			position: difference.file2Start,
+			count: difference.file2Lines.length,
 		})
 		await app.vault.modify(this.file2, newFile2Content)
 
