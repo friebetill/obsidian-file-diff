@@ -38,12 +38,8 @@ export class ActionLine {
 	build(container: HTMLDivElement): void {
 		const actionLine = container.createDiv({ cls: 'flex-row gap-2 py-2' })
 
-		const hasPlusLines = this.difference.lines.some((l) =>
-			l.startsWith('+')
-		)
-		const hasMinusLines = this.difference.lines.some((l) =>
-			l.startsWith('-')
-		)
+		const hasMinusLines = this.difference.file1Lines.length > 0
+		const hasPlusLines = this.difference.file2Lines.length > 0
 
 		if (hasPlusLines && hasMinusLines) {
 			new ActionLineButton({
@@ -60,6 +56,7 @@ export class ActionLine {
 				text: 'Accept All',
 				onClick: (e) => this.acceptAllClick(e, this.difference),
 			}).build(actionLine)
+			// TODO(tillf): Add button to accept none of the changes
 		} else if (hasMinusLines) {
 			new ActionLineButton({
 				text: `Accept from ${this.file1.name}`,
@@ -89,10 +86,7 @@ export class ActionLine {
 	): Promise<void> {
 		event.preventDefault()
 
-		const changedLines = difference.lines
-			.filter((line) => line.startsWith('-'))
-			.map((line) => line.slice(1, line.length))
-			.join('\n')
+		const changedLines = difference.file1Lines.join('\n')
 		const newContent = replaceLine({
 			fullText: this.file2Content,
 			newLine: changedLines,
@@ -109,10 +103,7 @@ export class ActionLine {
 	): Promise<void> {
 		event.preventDefault()
 
-		const changedLines = difference.lines
-			.filter((line) => line.startsWith('+'))
-			.map((line) => line.slice(1, line.length))
-			.join('\n')
+		const changedLines = difference.file2Lines.join('\n')
 		const newContent = replaceLine({
 			fullText: this.file1Content,
 			newLine: changedLines,
@@ -129,10 +120,10 @@ export class ActionLine {
 	): Promise<void> {
 		event.preventDefault()
 
-		const changedLines = difference.lines
-			.filter((line) => line.startsWith('-') || line.startsWith('+'))
-			.map((line) => line.slice(1, line.length))
-			.join('\n')
+		const changedLines = [
+			...difference.file1Lines,
+			...difference.file2Lines,
+		].join('\n')
 
 		const newFile1Content = replaceLine({
 			fullText: this.file1Content,
@@ -160,7 +151,7 @@ export class ActionLine {
 		const newContent = deleteLines({
 			fullText: this.file1Content,
 			position: difference.file1Start,
-			count: difference.lines.length,
+			count: difference.file1Lines.length,
 		})
 		await app.vault.modify(this.file1, newContent)
 
@@ -176,7 +167,7 @@ export class ActionLine {
 		const newContent = deleteLines({
 			fullText: this.file2Content,
 			position: difference.file2Start,
-			count: difference.lines.length,
+			count: difference.file2Lines.length,
 		})
 		await app.vault.modify(this.file2, newContent)
 

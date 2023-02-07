@@ -36,6 +36,8 @@ export class DifferencesView extends ItemView {
 
 	private file1Lines: string[]
 
+	private file2Lines: string[]
+
 	private lineCount: number
 
 	private wasDeleteModalShown = false
@@ -57,25 +59,23 @@ export class DifferencesView extends ItemView {
 		// TODO(tillf): Find way to refresh state when one of the files changes
 
 		this.file1Content = await this.app.vault.read(this.file1)
-		this.file1Lines = this.file1Content.split('\n')
-
 		this.file2Content = await this.app.vault.read(this.file2)
-		this.fileDifferences = FileDifferences.fromParsedDiff(
-			structuredPatch(
-				this.file1.path,
-				this.file2.path,
-				// Streamline empty lines at the end as this remove edge cases
-				this.file1Content.trimEnd().concat('\n'),
-				this.file2Content.trimEnd().concat('\n')
-			)
-		)
 
-		// Find the highest line number we need to go through. This can be the
-		// highest number in the differences, because the second file can have
-		// more lines than the first file.
+		const parsedDiff = structuredPatch(
+			this.file1.path,
+			this.file2.path,
+			// Streamline empty lines at the end as this remove edge cases
+			this.file1Content.trimEnd().concat('\n'),
+			this.file2Content.trimEnd().concat('\n')
+		)
+		this.fileDifferences = FileDifferences.fromParsedDiff(parsedDiff)
+
+		this.file1Lines = this.file1Content.split('\n')
+		this.file2Lines = this.file2Content.split('\n')
+
 		this.lineCount = Math.max(
 			this.file1Lines.length,
-			...this.fileDifferences.differences.map((d) => d.file1Start)
+			this.file2Lines.length
 		)
 	}
 
@@ -84,9 +84,26 @@ export class DifferencesView extends ItemView {
 
 		const container = this.contentEl.createDiv({ cls: 'container' })
 
-		for (let i = 0; i <= this.lineCount; i += 1) {
-			const line = i in this.file1Lines ? this.file1Lines[i] : null
+		this.buildLines(container)
+
+		this.scrollToFirstDifference()
+		if (
+			this.fileDifferences.differences.length === 0 &&
+			this.showMergeOption &&
+			!this.wasDeleteModalShown
+		) {
+			this.showDeleteModal()
+		}
+	}
+
+	private buildLines(container: HTMLDivElement): void {
+		let i = 0
+		while (i <= this.lineCount) {
+			const line =
+				i in this.file1Lines ? this.file1Lines[i] : this.file2Lines[i]
+
 			const difference = this.fileDifferences.differences.find(
+				// eslint-disable-next-line no-loop-func
 				(d) => d.file1Start === i
 			)
 
@@ -95,38 +112,15 @@ export class DifferencesView extends ItemView {
 					cls: 'difference',
 				})
 				this.buildDifferenceVisualizer(differenceContainer, difference)
-			}
-			if (
-				line != null &&
-				(difference == null || !difference.hasChangesFromFile1())
-			) {
+				i += Math.max(difference.file1Lines.length, 1)
+			} else {
 				container.createDiv({
 					// Necessary to give the line a height when it's empty.
 					text: preventEmptyString(line),
 					cls: 'line',
 				})
+				i += 1
 			}
-		}
-
-		if (this.fileDifferences.differences.length > 0) {
-			const containerRect = this.contentEl
-				.getElementsByClassName('container')[0]
-				.getBoundingClientRect()
-			const elementRect = this.contentEl
-				.getElementsByClassName('difference')[0]
-				.getBoundingClientRect()
-			this.contentEl.scrollTo({
-				top: elementRect.top - containerRect.top - 100,
-				behavior: 'smooth',
-			})
-		}
-
-		if (
-			this.fileDifferences.differences.length === 0 &&
-			this.showMergeOption &&
-			!this.wasDeleteModalShown
-		) {
-			this.showDeleteModal()
 		}
 	}
 
@@ -150,20 +144,39 @@ export class DifferencesView extends ItemView {
 			}).build(container)
 		}
 
-		difference.lines.forEach((line) => {
-			if (line.startsWith('+')) {
-				container.createDiv({
-					// Necessary to give the line a height when it's empty.
-					text: preventEmptyString(line.slice(1, line.length)),
-					cls: 'line bg-turquoise-light',
-				})
-			} else if (line.startsWith('-')) {
-				container.createDiv({
-					// Necessary to give the line a height when it's empty.
-					text: preventEmptyString(line.slice(1, line.length)),
-					cls: 'line bg-blue-light',
-				})
-			}
+		for (let i = 0; i < difference.file1Lines.length; i += 1) {
+			const line = difference.file1Lines[i]
+			container.createDiv({
+				// Necessary to give the line a height when it's empty.
+				text: preventEmptyString(line),
+				cls: 'line bg-turquoise-light',
+			})
+		}
+
+		for (let i = 0; i < difference.file2Lines.length; i += 1) {
+			const line = difference.file2Lines[i]
+			container.createDiv({
+				// Necessary to give the line a height when it's empty.
+				text: preventEmptyString(line),
+				cls: 'line bg-blue-light',
+			})
+		}
+	}
+
+	private scrollToFirstDifference(): void {
+		if (this.fileDifferences.differences.length === 0) {
+			return
+		}
+
+		const containerRect = this.contentEl
+			.getElementsByClassName('container')[0]
+			.getBoundingClientRect()
+		const elementRect = this.contentEl
+			.getElementsByClassName('difference')[0]
+			.getBoundingClientRect()
+		this.contentEl.scrollTo({
+			top: elementRect.top - containerRect.top - 100,
+			behavior: 'smooth',
 		})
 	}
 

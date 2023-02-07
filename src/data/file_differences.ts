@@ -42,6 +42,8 @@ export class FileDifferences {
 		const differences: Difference[] = []
 
 		parsedDiff.hunks.forEach((hunk) => {
+			let line1Count = 0
+			let line2Count = 0
 			for (let i = 0; i < hunk.lines.length; i += 1) {
 				const line = hunk.lines[i]
 
@@ -49,7 +51,7 @@ export class FileDifferences {
 					const start = i
 
 					// Find the end of the contiguous lines
-					let end = i
+					let end = start
 					while (
 						end < hunk.lines.length - 1 &&
 						(hunk.lines[end + 1].startsWith('+') ||
@@ -59,13 +61,25 @@ export class FileDifferences {
 					}
 
 					// Add the contiguous lines to the differences
+					const file1Lines = hunk.lines
+						.slice(start, end + 1)
+						.filter((l) => l.startsWith('-'))
+						.map((l) => l.slice(1))
+					const file2Lines = hunk.lines
+						.slice(start, end + 1)
+						.filter((l) => l.startsWith('+'))
+						.map((l) => l.slice(1))
 					differences.push(
 						new Difference({
-							file1Start: hunk.oldStart + start - 1,
-							file2Start: hunk.newStart + start - 1,
-							lines: hunk.lines.slice(start, end + 1),
+							file1Start: hunk.oldStart + start - line2Count - 1,
+							file2Start: hunk.newStart + start - line1Count - 1,
+							file1Lines,
+							file2Lines,
 						})
 					)
+
+					line1Count += file1Lines.length
+					line2Count += file2Lines.length
 					i += end - start
 				}
 			}
