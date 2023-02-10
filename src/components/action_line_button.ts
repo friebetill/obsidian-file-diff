@@ -12,7 +12,7 @@ export class ActionLineButton {
 		actionLine
 			.createEl('a', {
 				text: this.text,
-				cls: 'no-decoration text-xxs text-gray',
+				cls: 'no-decoration text-xxs file-diff__action-line',
 			})
 			.onClickEvent(this.onClick)
 	}

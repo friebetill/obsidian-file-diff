@@ -82,7 +82,9 @@ export class DifferencesView extends ItemView {
 	private build(): void {
 		this.contentEl.empty()
 
-		const container = this.contentEl.createDiv({ cls: 'container' })
+		const container = this.contentEl.createDiv({
+			cls: 'file-diff__container',
+		})
 
 		this.buildLines(container)
 
@@ -117,7 +119,7 @@ export class DifferencesView extends ItemView {
 				container.createDiv({
 					// Necessary to give the line a height when it's empty.
 					text: preventEmptyString(line),
-					cls: 'line',
+					cls: 'file-diff__line',
 				})
 				i += 1
 			}
@@ -149,7 +151,7 @@ export class DifferencesView extends ItemView {
 			container.createDiv({
 				// Necessary to give the line a height when it's empty.
 				text: preventEmptyString(line),
-				cls: 'line bg-turquoise-light',
+				cls: 'file-diff__line file-diff__top-line__bg',
 			})
 		}
 
@@ -158,7 +160,7 @@ export class DifferencesView extends ItemView {
 			container.createDiv({
 				// Necessary to give the line a height when it's empty.
 				text: preventEmptyString(line),
-				cls: 'line bg-blue-light',
+				cls: 'file-diff__line file-diff__bottom-line__bg',
 			})
 		}
 	}
@@ -169,7 +171,7 @@ export class DifferencesView extends ItemView {
 		}
 
 		const containerRect = this.contentEl
-			.getElementsByClassName('container')[0]
+			.getElementsByClassName('file-diff__container')[0]
 			.getBoundingClientRect()
 		const elementRect = this.contentEl
 			.getElementsByClassName('difference')[0]

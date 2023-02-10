@@ -21,7 +21,7 @@ export class DeleteFileModal extends Modal {
 
 	onOpen(): void {
 		// Counteract gravity pull by moving box up for balanced composition
-		this.modalEl.addClass('mb-16')
+		this.modalEl.addClass('mb-20')
 
 		this.contentEl.createEl('h2', {
 			text: `Delete "${this.file2.name}"?`,
@@ -37,12 +37,12 @@ export class DeleteFileModal extends Modal {
 		const buttonContainer = this.contentEl.createDiv('button-container')
 		const cancelButton = buttonContainer.createEl('button', {
 			text: 'Cancel',
-			cls: 'mr-8',
+			cls: 'mr-2',
 		})
 		cancelButton.addEventListener('click', () => this.close())
 		const deleteButton = buttonContainer.createEl('button', {
 			text: 'Delete',
-			cls: 'button-danger',
+			cls: 'file-diff__button-danger',
 		})
 		deleteButton.addEventListener('click', () => {
 			this.app.vault.delete(this.file2)

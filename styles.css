@@ -1,11 +1,11 @@
-.container {
+.file-diff__container {
 	width: 100%;
 	max-width: 100%;
 	overflow-x: scroll;
 	padding: 1rem;
 }
 
-.line {
+.file-diff__line {
 	padding: 0.1rem 0;
 }
 
@@ -14,61 +14,71 @@ button:focus-visible {
 }
 
 @media (prefers-color-scheme: light) {
-	.bg-turquoise-light {
+	.file-diff__top-line__bg {
 		background-color: #d9f4ef;
 	}
 
-	.bg-blue-light {
+	.file-diff__bottom-line__bg {
 		background-color: #d9edff;
 	}
 
-	.button-danger {
+	.file-diff__button-danger {
 		background-color: #b00020 !important;
 		color: #ffffff;
 	}
 
-	.button-danger:hover {
+	.file-diff__button-danger:hover {
 		background-color: #9f0020 !important;
 		color: #ffffff;
+	}
+
+	.file-diff__action-line {
+		color: #919191;
 	}
 }
 
 @media (prefers-color-scheme: dark) {
-	.bg-turquoise-light {
+	.file-diff__top-line__bg {
 		background-color: #25403b;
 	}
 
-	.bg-blue-light {
+	.file-diff__bottom-line__bg {
 		background-color: #25394b;
 	}
 
-	.button-danger {
+	.file-diff__button-danger {
 		background-color: #cf6679 !important;
 		color: #ffffff;
 	}
 
-	.button-danger:hover {
+	.diff__button-danger:hover {
 		background-color: #b85a6d !important;
 		color: #ffffff;
 	}
+
+	.file-diff__action-line {
+		color: #919191;
+	}
+}
+
+/* Tailwind CSS */
+.flex {
+	display: flex;
 }
 
 .flex-row {
-	display: flex;
 	flex-direction: row;
 }
 
-.gap-2 {
-	gap: 4px;
+.gap-1 {
+	gap: 0.25rem; /* 4px */
 }
 
 .no-decoration {
-	text-decoration: none;
 	text-decoration-line: none;
 }
 
 .no-decoration:hover {
-	text-decoration: none;
 	text-decoration-line: none;
 }
 
@@ -76,19 +86,16 @@ button:focus-visible {
 	font-size: 0.65rem;
 }
 
-.py-2 {
-	padding-top: 2px;
-	padding-bottom: 2px;
+/* Rename from py-0.5 to py-0-5, because dots aren't allowed in class names */
+.py-0-5 {
+	padding-top: 0.125rem; /* 2px */
+    padding-bottom: 0.125rem; /* 2px */
 }
 
-.mr-8 {
-	margin-right: 8px;
+.mr-2 {
+	margin-right: 0.5rem; /* 8px */
 }
 
-.mb-16 {
-	margin-bottom: 80px;
-}
-
-.text-gray {
-	color: #919191;
+.mb-20 {
+	margin-bottom: 5rem; /* 80px */
 }

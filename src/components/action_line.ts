@@ -36,7 +36,9 @@ export class ActionLine {
 	private triggerRebuild: VoidCallback
 
 	build(container: HTMLDivElement): void {
-		const actionLine = container.createDiv({ cls: 'flex-row gap-2 py-2' })
+		const actionLine = container.createDiv({
+			cls: 'flex flex-row gap-1 py-0-5',
+		})
 
 		const hasMinusLines = this.difference.file1Lines.length > 0
 		const hasPlusLines = this.difference.file2Lines.length > 0
