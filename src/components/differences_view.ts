@@ -50,14 +50,23 @@ export class DifferencesView extends ItemView {
 		return `Difference between ${this.file1.name} and ${this.file2.name}`
 	}
 
+	async onload(): Promise<void> {
+		this.registerEvent(
+			this.app.vault.on('modify', async (file) => {
+				if (file === this.file1 || file === this.file2) {
+					await this.updateState()
+					this.build()
+				}
+			})
+		)
+	}
+
 	async onOpen(): Promise<void> {
 		await this.updateState()
 		this.build()
 	}
 
 	private async updateState(): Promise<void> {
-		// TODO(tillf): Find way to refresh state when one of the files changes
-
 		this.file1Content = await this.app.vault.read(this.file1)
 		this.file2Content = await this.app.vault.read(this.file2)
 
