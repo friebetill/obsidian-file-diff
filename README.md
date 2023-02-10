@@ -31,6 +31,12 @@ When the plugin is officially release you can follow these steps to install the 
 2. Install the plugin
 3. Enable the plugin
 
+## FAQ
+
+1. How do I adjust the colors?
+
+   Adjust the colors by following [these instructions](https://github.com/friebetill/obsidian-file-diff/issues/1#issuecomment-1425157959).
+
 ## Contributing
 
 If you have any issues or suggestions, please open an issue on the repository.
