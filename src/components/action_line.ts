@@ -97,6 +97,7 @@ export class ActionLine {
 			fullText: this.file2Content,
 			newLine: changedLines,
 			position: difference.file2Start,
+			linesToReplace: difference.file2Lines.length,
 		})
 		await app.vault.modify(this.file2, newContent)
 
@@ -114,6 +115,7 @@ export class ActionLine {
 			fullText: this.file1Content,
 			newLine: changedLines,
 			position: difference.file1Start,
+			linesToReplace: difference.file1Lines.length,
 		})
 		await app.vault.modify(this.file1, newContent)
 
@@ -135,6 +137,7 @@ export class ActionLine {
 			fullText: this.file1Content,
 			newLine: changedLines,
 			position: difference.file1Start,
+			linesToReplace: difference.file1Lines.length,
 		})
 		await app.vault.modify(this.file1, newFile1Content)
 
@@ -142,6 +145,7 @@ export class ActionLine {
 			fullText: this.file2Content,
 			newLine: changedLines,
 			position: difference.file2Start,
+			linesToReplace: difference.file2Lines.length,
 		})
 		await app.vault.modify(this.file2, newFile2Content)
 

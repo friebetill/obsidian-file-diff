@@ -9,6 +9,7 @@ describe('replaceLine', () => {
 			fullText,
 			newLine: 'newLine2',
 			position: 1,
+			linesToReplace: 1,
 		})
 		expect(newFullText).toBe('line1\nnewLine2\nline3')
 	})
@@ -19,17 +20,30 @@ describe('replaceLine', () => {
 			fullText,
 			newLine: 'newLine2\nnewLine3',
 			position: 1,
+			linesToReplace: 1,
 		})
 		expect(newFullText).toBe('line1\nnewLine2\nnewLine3\nline3')
 	})
 
-	it('should replacing with mutliple lines correctly', () => {
+	it('should remove line when new line is empty', () => {
 		const fullText = 'line1\nline2\nline3'
 		const newFullText = replaceLine({
 			fullText,
 			newLine: '',
 			position: 1,
+			linesToReplace: 1,
 		})
 		expect(newFullText).toBe('line1\nline3')
+	})
+
+	it('should replace two lines', () => {
+		const fullText = 'line1\nline2\nline3\nline4'
+		const newFullText = replaceLine({
+			fullText,
+			newLine: 'line5',
+			position: 1,
+			linesToReplace: 2,
+		})
+		expect(newFullText).toBe('line1\nline5\nline4')
 	})
 })

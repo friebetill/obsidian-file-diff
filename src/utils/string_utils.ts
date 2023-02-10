@@ -14,9 +14,14 @@ export function replaceLine(args: {
 	fullText: string
 	newLine: string
 	position: number
+	linesToReplace: number
 }): string {
 	const lines = args.fullText.split('\n')
-	lines[args.position] = args.newLine
+	if (args.newLine === '') {
+		lines.splice(args.position, args.linesToReplace)
+	} else {
+		lines.splice(args.position, args.linesToReplace, args.newLine)
+	}
 	return lines.join('\n')
 }
 
