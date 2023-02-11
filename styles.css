@@ -66,7 +66,7 @@ button:focus-visible {
 	font-size: 0.65rem;
 }
 
-/* Rename from py-0.5 to py-0-5, because dots aren't allowed in class names */
+/* Rename from py-0.5 to py-0-5, as dots aren't allowed in selector names */
 .py-0-5 {
 	padding-top: 0.125rem; /* 2px */
     padding-bottom: 0.125rem; /* 2px */
