@@ -44,7 +44,7 @@ export class DeleteFileModal extends Modal {
 			text: 'Cancel',
 		})
 
-		deleteButton.addEventListener('click', this.handleDeleteClick)
+		deleteButton.addEventListener('click', () => this.handleDeleteClick())
 		cancelButton.addEventListener('click', () => this.close())
 	}
 
