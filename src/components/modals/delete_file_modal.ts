@@ -23,7 +23,7 @@ export class DeleteFileModal extends Modal {
 		// Counteract gravity pull by moving box up for balanced composition
 		this.modalEl.addClass('mb-20')
 
-		this.contentEl.createEl('h2', {
+		this.contentEl.createEl('h3', {
 			text: `Delete "${this.file2.name}"?`,
 		})
 		this.contentEl.createEl('p', {
@@ -35,24 +35,25 @@ export class DeleteFileModal extends Modal {
 		})
 
 		const buttonContainer = this.contentEl.createDiv('button-container')
-		const cancelButton = buttonContainer.createEl('button', {
-			text: 'Cancel',
-			cls: 'mr-2',
-		})
-		cancelButton.addEventListener('click', () => this.close())
+
 		const deleteButton = buttonContainer.createEl('button', {
 			text: 'Delete',
-			cls: 'file-diff__button-danger',
+			cls: 'mod-warning mr-2',
 		})
-		deleteButton.addEventListener('click', () => {
-			this.app.vault.delete(this.file2)
+		const cancelButton = buttonContainer.createEl('button', {
+			text: 'Cancel',
+		})
 
-			this.close()
-			// Close currently active file
-			this.app.workspace
-				.getActiveViewOfType(DifferencesView)
-				?.leaf.detach()
-			this.onDone(null)
-		})
+		deleteButton.addEventListener('click', this.handleDeleteClick)
+		cancelButton.addEventListener('click', () => this.close())
+	}
+
+	handleDeleteClick(): void {
+		this.app.vault.delete(this.file2)
+
+		this.close()
+		// Close currently active file
+		this.app.workspace.getActiveViewOfType(DifferencesView)?.leaf.detach()
+		this.onDone(null)
 	}
 }

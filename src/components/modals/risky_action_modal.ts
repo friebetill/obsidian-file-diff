@@ -12,7 +12,7 @@ export class RiskyActionModal extends Modal {
 		// Counteract gravity pull by moving box up for balanced composition
 		this.modalEl.addClass('mb-20')
 
-		this.contentEl.createEl('h2', { text: `Do you accept the risk?` })
+		this.contentEl.createEl('h3', { text: `Do you accept the risk?` })
 		this.contentEl.createEl('p', {
 			text:
 				`The merging options alter the files irreversibly. ` +
@@ -21,15 +21,16 @@ export class RiskyActionModal extends Modal {
 		})
 
 		const buttonContainer = this.contentEl.createDiv('button-container')
-		const cancelButton = buttonContainer.createEl('button', {
-			text: 'Cancel',
-			cls: 'mr-2',
-		})
-		cancelButton.addEventListener('click', () => this.close())
+
 		const deleteButton = buttonContainer.createEl('button', {
 			text: 'Accept Risk',
-			cls: 'file-diff__button-danger',
+			cls: 'mod-warning mr-2',
 		})
+		const cancelButton = buttonContainer.createEl('button', {
+			text: 'Cancel',
+		})
+
+		cancelButton.addEventListener('click', () => this.close())
 		deleteButton.addEventListener('click', () => {
 			this.close()
 			this.onAccept(null)

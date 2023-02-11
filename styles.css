@@ -9,6 +9,10 @@
 	padding: 0.1rem 0;
 }
 
+.button-container {
+	text-align: right;
+}
+
 button:focus-visible {
 	box-shadow: var(--input-shadow);
 }
@@ -21,20 +25,6 @@ button:focus-visible {
 	.file-diff__bottom-line__bg {
 		background-color: #d9edff;
 	}
-
-	.file-diff__button-danger {
-		background-color: #b00020 !important;
-		color: #ffffff;
-	}
-
-	.file-diff__button-danger:hover {
-		background-color: #9f0020 !important;
-		color: #ffffff;
-	}
-
-	.file-diff__action-line {
-		color: #919191;
-	}
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,20 +35,10 @@ button:focus-visible {
 	.file-diff__bottom-line__bg {
 		background-color: #25394b;
 	}
+}
 
-	.file-diff__button-danger {
-		background-color: #cf6679 !important;
-		color: #ffffff;
-	}
-
-	.diff__button-danger:hover {
-		background-color: #b85a6d !important;
-		color: #ffffff;
-	}
-
-	.file-diff__action-line {
-		color: #919191;
-	}
+.file-diff__action-line {
+	color: #919191;
 }
 
 /* Tailwind CSS */
