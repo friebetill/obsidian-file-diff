@@ -70,17 +70,22 @@ export class DifferencesView extends ItemView {
 		this.file1Content = await this.app.vault.read(this.file1)
 		this.file2Content = await this.app.vault.read(this.file2)
 
+		this.file1Lines = this.file1Content
+			.split('\n')
+			// Streamline empty lines at the end as this remove edge cases
+			.map((line) => line.trimEnd())
+		this.file2Lines = this.file2Content
+			.split('\n')
+			// Streamline empty lines at the end as this remove edge cases
+			.map((line) => line.trimEnd())
+
 		const parsedDiff = structuredPatch(
 			this.file1.path,
 			this.file2.path,
-			// Streamline empty lines at the end as this remove edge cases
-			this.file1Content.trimEnd().concat('\n'),
-			this.file2Content.trimEnd().concat('\n')
+			this.file1Lines.join('\n'),
+			this.file2Lines.join('\n')
 		)
 		this.fileDifferences = FileDifferences.fromParsedDiff(parsedDiff)
-
-		this.file1Lines = this.file1Content.split('\n')
-		this.file2Lines = this.file2Content.split('\n')
 
 		this.lineCount = Math.max(
 			this.file1Lines.length -
