@@ -89,13 +89,15 @@ export class DifferencesView extends ItemView {
 
 		this.lineCount = Math.max(
 			this.file1Lines.length -
-				this.fileDifferences.differences
-					.map((d) => d.file1Lines.length)
-					.reduce((a, b) => a + b, 0),
+				// Count each difference as one line
+				this.fileDifferences.differences.filter(
+					(d) => d.file1Lines.length > 0
+				).length,
 			this.file2Lines.length -
-				this.fileDifferences.differences
-					.map((d) => d.file2Lines.length)
-					.reduce((a, b) => a + b, 0)
+				// Count each difference as one line
+				this.fileDifferences.differences.filter(
+					(d) => d.file2Lines.length > 0
+				).length
 		)
 	}
 
