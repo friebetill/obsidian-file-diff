@@ -7,7 +7,7 @@ import { preventEmptyString } from '../utils/string_utils'
 import { ActionLine } from './action_line'
 import { DeleteFileModal } from './modals/delete_file_modal'
 
-export const VIEW_TYPE_PATCH = 'patch-view'
+export const VIEW_TYPE_DIFFERENCES = 'differences-view'
 
 export class DifferencesView extends ItemView {
 	constructor(args: {
@@ -43,7 +43,7 @@ export class DifferencesView extends ItemView {
 	private wasDeleteModalShown = false
 
 	getViewType(): string {
-		return VIEW_TYPE_PATCH
+		return VIEW_TYPE_DIFFERENCES
 	}
 
 	getDisplayText(): string {
