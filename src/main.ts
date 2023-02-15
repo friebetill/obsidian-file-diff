@@ -63,15 +63,17 @@ export default class FileDiffPlugin extends Plugin {
 				}
 
 				// Open differences view
-				const workspaceLeaf = this.app.workspace.getLeaf()
-				await workspaceLeaf.open(
-					new DifferencesView({
-						leaf: workspaceLeaf,
-						file1: activeFile,
-						file2: compareFile,
-						showMergeOption: true,
-					})
-				)
+				const workspaceLeaf = this.app.workspace.getMostRecentLeaf()
+				if (workspaceLeaf != null) {
+					await workspaceLeaf.open(
+						new DifferencesView({
+							leaf: workspaceLeaf,
+							file1: activeFile,
+							file2: compareFile,
+							showMergeOption: true,
+						})
+					)
+				}
 			},
 		})
 	}
