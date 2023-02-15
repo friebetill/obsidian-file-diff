@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-file-diff",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "Shows the differences between two files.",
 	"main": "main.js",
 	"scripts": {
