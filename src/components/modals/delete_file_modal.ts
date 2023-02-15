@@ -1,5 +1,4 @@
 import { Modal, TFile } from 'obsidian'
-import { DifferencesView } from '../differences_view'
 
 export class DeleteFileModal extends Modal {
 	constructor(args: {
@@ -52,8 +51,12 @@ export class DeleteFileModal extends Modal {
 		this.app.vault.delete(this.file2)
 
 		this.close()
-		// Close currently active file
-		this.app.workspace.getActiveViewOfType(DifferencesView)?.leaf.detach()
+
+		const leaf = this.app.workspace.getMostRecentLeaf()
+		if (leaf != null) {
+			leaf.openFile(this.file1)
+		}
+
 		this.onDone(null)
 	}
 }
