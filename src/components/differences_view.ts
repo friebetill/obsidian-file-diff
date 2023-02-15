@@ -71,14 +71,14 @@ export class DifferencesView extends ItemView {
 		this.file2Content = await this.app.vault.read(this.file2)
 
 		this.file1Lines = this.file1Content
-			// Remove trailing new lines as this removes edge cases
-			.trimEnd()
+			// Add trailing new line as this removes edge cases
+			.concat('\n')
 			.split('\n')
 			// Streamline empty lines at the end as this remove edge cases
 			.map((line) => line.trimEnd())
 		this.file2Lines = this.file2Content
-			// Remove trailing new lines as this removes edge cases
-			.trimEnd()
+			// Add trailing new line as this removes edge cases
+			.concat('\n')
 			.split('\n')
 			// Streamline empty lines at the end as this remove edge cases
 			.map((line) => line.trimEnd())
