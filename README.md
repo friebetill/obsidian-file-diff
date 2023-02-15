@@ -13,6 +13,9 @@
 src="https://user-images.githubusercontent.com/10923085/216749496-27f0b241-c05b-4aec-ba88-a7c8c91938a6.gif"
 alt="GIF of a demo show this plugin" width="900" />
 
+## Motivation
+
+I created this plugin because I use SyncThing and it bothered me to clean up merge conflicts by hand.
 
 ## Installation
 
