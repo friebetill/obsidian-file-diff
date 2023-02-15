@@ -126,12 +126,13 @@ export class DifferencesView extends ItemView {
 	}
 
 	private buildLines(container: HTMLDivElement): void {
-		let i = 0
-		let j = 0
-		while (i <= this.lineCount || j <= this.lineCount) {
+		let lineCount1 = 0
+		let lineCount2 = 0
+		while (lineCount1 <= this.lineCount || lineCount2 <= this.lineCount) {
 			const difference = this.fileDifferences.differences.find(
 				// eslint-disable-next-line no-loop-func
-				(d) => d.file1Start === i && d.file2Start === j
+				(d) =>
+					d.file1Start === lineCount1 && d.file2Start === lineCount2
 			)
 
 			if (difference != null) {
@@ -139,17 +140,20 @@ export class DifferencesView extends ItemView {
 					cls: 'difference',
 				})
 				this.buildDifferenceVisualizer(differenceContainer, difference)
-				i += difference.file1Lines.length
-				j += difference.file2Lines.length
+				lineCount1 += difference.file1Lines.length
+				lineCount2 += difference.file2Lines.length
 			} else {
-				const line = i <= j ? this.file1Lines[i] : this.file2Lines[j]
+				const line =
+					lineCount1 <= lineCount2
+						? this.file1Lines[lineCount1]
+						: this.file2Lines[lineCount2]
 				container.createDiv({
 					// Necessary to give the line a height when it's empty.
 					text: preventEmptyString(line),
 					cls: 'file-diff__line',
 				})
-				i += 1
-				j += 1
+				lineCount1 += 1
+				lineCount2 += 1
 			}
 		}
 	}
