@@ -120,6 +120,7 @@ export class DifferencesView extends ItemView {
 			this.showMergeOption &&
 			!this.wasDeleteModalShown
 		) {
+			this.wasDeleteModalShown = true
 			this.showDeleteModal()
 		}
 	}
