@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ParsedDiff } from 'diff'
-import { describe, expect, it } from 'vitest'
-import { FileDifferences } from './file_differences'
+import { ParsedDiff } from 'diff';
+import { describe, expect, it } from 'vitest';
+import { FileDifferences } from './file_differences';
 
 describe('FileDifferences.fromParsedDiff', () => {
 	it('should work with files containing one line', () => {
@@ -10,13 +10,13 @@ describe('FileDifferences.fromParsedDiff', () => {
 {"oldStart": 1, "oldLines": 1, "newStart": 1, "newLines": 1,
 	"lines": ["-a","+b"]
 }]}
-`) as ParsedDiff
+`) as ParsedDiff;
 
-		const fileDifferences = FileDifferences.fromParsedDiff(test)
+		const fileDifferences = FileDifferences.fromParsedDiff(test);
 
 		expect(JSON.stringify(fileDifferences)).toBe(
 			'{"file1Name":"1","file2Name":"2","differences":' +
 				'[{"start":0,"lines":["-a","+b"]}]}'
-		)
-	})
-})
+		);
+	});
+});

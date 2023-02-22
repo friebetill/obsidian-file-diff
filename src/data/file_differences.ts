@@ -1,25 +1,25 @@
-import { ParsedDiff } from 'diff'
-import { Difference } from './difference'
+import { ParsedDiff } from 'diff';
+import { Difference } from './difference';
 
 /**
  * A class that contains the differences between two files.
  */
 export class FileDifferences {
 	private constructor(args: {
-		file1Name?: string
-		file2Name?: string
-		differences: Difference[]
+		file1Name?: string;
+		file2Name?: string;
+		differences: Difference[];
 	}) {
-		this.file1Name = args.file1Name
-		this.file2Name = args.file2Name
-		this.differences = args.differences
+		this.file1Name = args.file1Name;
+		this.file2Name = args.file2Name;
+		this.differences = args.differences;
 	}
 
-	public readonly file1Name?: string
+	public readonly file1Name?: string;
 
-	public readonly file2Name?: string
+	public readonly file2Name?: string;
 
-	public readonly differences: Difference[]
+	public readonly differences: Difference[];
 
 	/**
 	 * Returns a FileDifferences object from the given ParsedDiff instance.
@@ -39,36 +39,36 @@ export class FileDifferences {
 	 * chose the latter option as it seemed simpler.
 	 */
 	static fromParsedDiff(parsedDiff: ParsedDiff): FileDifferences {
-		const differences: Difference[] = []
+		const differences: Difference[] = [];
 
 		parsedDiff.hunks.forEach((hunk) => {
-			let line1Count = 0
-			let line2Count = 0
+			let line1Count = 0;
+			let line2Count = 0;
 			for (let i = 0; i < hunk.lines.length; i += 1) {
-				const line = hunk.lines[i]
+				const line = hunk.lines[i];
 
 				if (line.startsWith('+') || line.startsWith('-')) {
-					const start = i
+					const start = i;
 
 					// Find the end of the contiguous lines
-					let end = start
+					let end = start;
 					while (
 						end < hunk.lines.length - 1 &&
 						(hunk.lines[end + 1].startsWith('+') ||
 							hunk.lines[end + 1].startsWith('-'))
 					) {
-						end += 1
+						end += 1;
 					}
 
 					// Add the contiguous lines to the differences
 					const file1Lines = hunk.lines
 						.slice(start, end + 1)
 						.filter((l) => l.startsWith('-'))
-						.map((l) => l.slice(1))
+						.map((l) => l.slice(1));
 					const file2Lines = hunk.lines
 						.slice(start, end + 1)
 						.filter((l) => l.startsWith('+'))
-						.map((l) => l.slice(1))
+						.map((l) => l.slice(1));
 					differences.push(
 						new Difference({
 							file1Start: hunk.oldStart + start - line2Count - 1,
@@ -76,19 +76,19 @@ export class FileDifferences {
 							file1Lines,
 							file2Lines,
 						})
-					)
+					);
 
-					line1Count += file1Lines.length
-					line2Count += file2Lines.length
-					i += end - start
+					line1Count += file1Lines.length;
+					line2Count += file2Lines.length;
+					i += end - start;
 				}
 			}
-		})
+		});
 
 		return new this({
 			file1Name: parsedDiff.oldFileName,
 			file2Name: parsedDiff.newFileName,
 			differences,
-		})
+		});
 	}
 }

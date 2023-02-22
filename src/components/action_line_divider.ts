@@ -3,6 +3,6 @@ export class ActionLineDivider {
 		actionLine.createEl('span', {
 			text: '|',
 			cls: 'text-xxs file-diff__action-line',
-		})
+		});
 	}
 }
