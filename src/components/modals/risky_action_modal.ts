@@ -20,7 +20,9 @@ export class RiskyActionModal extends Modal {
 				`accepting of the associated risks.`,
 		})
 
-		const buttonContainer = this.contentEl.createDiv('button-container')
+		const buttonContainer = this.contentEl.createDiv(
+			'file-diff__button-container'
+		)
 
 		const deleteButton = buttonContainer.createEl('button', {
 			text: 'Accept Risk',

@@ -33,7 +33,9 @@ export class DeleteFileModal extends Modal {
 				`irreversible.`,
 		})
 
-		const buttonContainer = this.contentEl.createDiv('button-container')
+		const buttonContainer = this.contentEl.createDiv(
+			'file-diff__button-container'
+		)
 
 		const deleteButton = buttonContainer.createEl('button', {
 			text: 'Delete',

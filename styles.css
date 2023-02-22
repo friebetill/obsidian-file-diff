@@ -9,12 +9,8 @@
 	padding: 0.1rem 0;
 }
 
-.button-container {
+.file-diff__button-container {
 	text-align: right;
-}
-
-button:focus-visible {
-	box-shadow: var(--input-shadow);
 }
 
 @media (prefers-color-scheme: light) {
@@ -69,7 +65,7 @@ button:focus-visible {
 /* Rename from py-0.5 to py-0-5, as dots aren't allowed in selector names */
 .py-0-5 {
 	padding-top: 0.125rem; /* 2px */
-    padding-bottom: 0.125rem; /* 2px */
+	padding-bottom: 0.125rem; /* 2px */
 }
 
 .mr-2 {
