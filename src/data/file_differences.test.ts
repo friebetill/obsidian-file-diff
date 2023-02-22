@@ -15,8 +15,9 @@ describe('FileDifferences.fromParsedDiff', () => {
 		const fileDifferences = FileDifferences.fromParsedDiff(test);
 
 		expect(JSON.stringify(fileDifferences)).toBe(
-			'{"file1Name":"1","file2Name":"2","differences":' +
-				'[{"start":0,"lines":["-a","+b"]}]}'
+			'{"file1Name":"1","file2Name":"2",' +
+				'"differences":[{"file1Start":0,"file2Start":0,' +
+				'"file1Lines":["a"],"file2Lines":["b"]}]}'
 		);
 	});
 });
