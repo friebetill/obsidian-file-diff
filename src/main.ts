@@ -3,7 +3,6 @@ import { Plugin, TFile } from 'obsidian'
 import { DifferencesView } from './components/differences_view'
 import { RiskyActionModal } from './components/modals/risky_action_modal'
 import { SelectFileModal } from './components/modals/select_file_modal'
-import { delay } from './utils/delay'
 
 export default class FileDiffPlugin extends Plugin {
 	fileDiffMergeWarningKey = 'file-diff-merge-warning'
@@ -81,9 +80,7 @@ export default class FileDiffPlugin extends Plugin {
 	getFileToCompare(activeFile: TFile): Promise<TFile | undefined> {
 		const selectableFiles = this.app.vault.getFiles()
 		selectableFiles.remove(activeFile)
-		return this.showSelectOtherFileModal({
-			selectableFiles,
-		})
+		return this.showSelectOtherFileModal({ selectableFiles })
 	}
 
 	showSelectOtherFileModal(args: {
@@ -109,7 +106,7 @@ export default class FileDiffPlugin extends Plugin {
 							'true'
 						)
 						// Wait for the set item dispatch event to be processed
-						await delay(50)
+						await sleep(50)
 
 						resolve()
 					}
