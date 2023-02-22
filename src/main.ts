@@ -9,7 +9,7 @@ export default class FileDiffPlugin extends Plugin {
 
 	onload(): void {
 		this.addCommand({
-			id: 'file-diff',
+			id: 'compare',
 			name: 'Compare',
 			editorCallback: async () => {
 				// Get current active file
@@ -38,7 +38,7 @@ export default class FileDiffPlugin extends Plugin {
 		})
 
 		this.addCommand({
-			id: 'file-diff-merge',
+			id: 'compare-and-merge',
 			name: 'Compare and merge',
 			editorCallback: async () => {
 				// Show warning when this option is selected for the first time
