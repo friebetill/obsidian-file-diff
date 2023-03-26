@@ -1,13 +1,21 @@
 import { Plugin, TFile } from 'obsidian';
 
-import { DifferencesView } from './components/differences_view';
+import {
+	DifferencesView,
+	VIEW_TYPE_DIFFERENCES,
+} from './components/differences_view';
 import { RiskyActionModal } from './components/modals/risky_action_modal';
 import { SelectFileModal } from './components/modals/select_file_modal';
 
 export default class FileDiffPlugin extends Plugin {
 	fileDiffMergeWarningKey = 'file-diff-merge-warning';
 
-	onload(): void {
+	override onload(): void {
+		this.registerView(
+			VIEW_TYPE_DIFFERENCES,
+			(leaf) => new DifferencesView(leaf)
+		);
+
 		this.addCommand({
 			id: 'compare',
 			name: 'Compare',
@@ -25,14 +33,20 @@ export default class FileDiffPlugin extends Plugin {
 				}
 
 				// Open differences view
-				const workspaceLeaf = this.app.workspace.getLeaf();
-				await workspaceLeaf.open(
-					new DifferencesView({
-						leaf: workspaceLeaf,
+				this.app.workspace.detachLeavesOfType(VIEW_TYPE_DIFFERENCES);
+
+				await this.app.workspace.getLeaf(true).setViewState({
+					type: VIEW_TYPE_DIFFERENCES,
+					active: true,
+					state: {
 						file1: activeFile,
 						file2: compareFile,
 						showMergeOption: false,
-					})
+					},
+				});
+
+				this.app.workspace.revealLeaf(
+					this.app.workspace.getLeavesOfType(VIEW_TYPE_DIFFERENCES)[0]
 				);
 			},
 		});
@@ -62,28 +76,36 @@ export default class FileDiffPlugin extends Plugin {
 				}
 
 				// Open differences view
-				const workspaceLeaf = this.app.workspace.getMostRecentLeaf();
-				if (workspaceLeaf != null) {
-					await workspaceLeaf.open(
-						new DifferencesView({
-							leaf: workspaceLeaf,
-							file1: activeFile,
-							file2: compareFile,
-							showMergeOption: true,
-						})
-					);
-				}
+				this.app.workspace.detachLeavesOfType(VIEW_TYPE_DIFFERENCES);
+
+				await this.app.workspace.getLeaf(true).setViewState({
+					type: VIEW_TYPE_DIFFERENCES,
+					active: true,
+					state: {
+						file1: activeFile,
+						file2: compareFile,
+						showMergeOption: true,
+					},
+				});
+
+				this.app.workspace.revealLeaf(
+					this.app.workspace.getLeavesOfType(VIEW_TYPE_DIFFERENCES)[0]
+				);
 			},
 		});
 	}
 
-	getFileToCompare(activeFile: TFile): Promise<TFile | undefined> {
+	override async onunload(): Promise<void> {
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_DIFFERENCES);
+	}
+
+	private getFileToCompare(activeFile: TFile): Promise<TFile | undefined> {
 		const selectableFiles = this.app.vault.getFiles();
 		selectableFiles.remove(activeFile);
 		return this.showSelectOtherFileModal({ selectableFiles });
 	}
 
-	showSelectOtherFileModal(args: {
+	private showSelectOtherFileModal(args: {
 		selectableFiles: TFile[];
 	}): Promise<TFile | undefined> {
 		return new Promise((resolve, reject) => {
@@ -94,7 +116,7 @@ export default class FileDiffPlugin extends Plugin {
 		});
 	}
 
-	showRiskyActionModal(): Promise<void> {
+	private showRiskyActionModal(): Promise<void> {
 		return new Promise((resolve, reject) => {
 			new RiskyActionModal({
 				onAccept: async (e: Error | null) => {

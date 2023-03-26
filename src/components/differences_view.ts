@@ -1,5 +1,5 @@
 import { structuredPatch } from 'diff';
-import { ItemView, TFile, WorkspaceLeaf } from 'obsidian';
+import { ItemView, TFile } from 'obsidian';
 import { Difference } from '../data/difference';
 import { FileDifferences } from '../data/file_differences';
 import { preventEmptyString } from '../utils/string_utils';
@@ -8,19 +8,13 @@ import { DeleteFileModal } from './modals/delete_file_modal';
 
 export const VIEW_TYPE_DIFFERENCES = 'differences-view';
 
-export class DifferencesView extends ItemView {
-	constructor(args: {
-		leaf: WorkspaceLeaf;
-		file1: TFile;
-		file2: TFile;
-		showMergeOption: boolean;
-	}) {
-		super(args.leaf);
-		this.file1 = args.file1;
-		this.file2 = args.file2;
-		this.showMergeOption = args.showMergeOption;
-	}
+interface ViewState {
+	file1: TFile;
+	file2: TFile;
+	showMergeOption: boolean;
+}
 
+export class DifferencesView extends ItemView {
 	private file1: TFile;
 
 	private file2: TFile;
@@ -41,15 +35,19 @@ export class DifferencesView extends ItemView {
 
 	private wasDeleteModalShown = false;
 
-	getViewType(): string {
+	override getViewType(): string {
 		return VIEW_TYPE_DIFFERENCES;
 	}
 
-	getDisplayText(): string {
-		return `Difference between ${this.file1.name} and ${this.file2.name}`;
+	override getDisplayText(): string {
+		return `File Diff`;
 	}
 
-	async onload(): Promise<void> {
+	override async setState(state: ViewState): Promise<void> {
+		this.file1 = state.file1;
+		this.file2 = state.file2;
+		this.showMergeOption = state.showMergeOption;
+
 		this.registerEvent(
 			this.app.vault.on('modify', async (file) => {
 				if (file === this.file1 || file === this.file2) {
@@ -58,9 +56,7 @@ export class DifferencesView extends ItemView {
 				}
 			})
 		);
-	}
 
-	async onOpen(): Promise<void> {
 		await this.updateState();
 		this.build();
 	}
@@ -221,7 +217,13 @@ export class DifferencesView extends ItemView {
 			new DeleteFileModal({
 				file1: this.file1,
 				file2: this.file2,
-				onDone: (e) => (e ? reject(e) : resolve()),
+				onDone: (e) => {
+					if (e) {
+						return reject(e);
+					}
+					this.leaf.detach();
+					return resolve();
+				},
 			}).open();
 		});
 	}
