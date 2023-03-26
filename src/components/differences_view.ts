@@ -8,22 +8,19 @@ import { DeleteFileModal } from './modals/delete_file_modal';
 
 export const VIEW_TYPE_DIFFERENCES = 'differences-view';
 
-interface ViewState {
+export interface ViewState {
 	file1: TFile;
 	file2: TFile;
 	showMergeOption: boolean;
+	continueCallback?: (shouldContinue: boolean) => Promise<void>;
 }
 
 export class DifferencesView extends ItemView {
-	private file1: TFile;
-
-	private file2: TFile;
+	private state: ViewState;
 
 	private file1Content: string;
 
 	private file2Content: string;
-
-	private showMergeOption: boolean;
 
 	private fileDifferences: FileDifferences;
 
@@ -44,13 +41,11 @@ export class DifferencesView extends ItemView {
 	}
 
 	override async setState(state: ViewState): Promise<void> {
-		this.file1 = state.file1;
-		this.file2 = state.file2;
-		this.showMergeOption = state.showMergeOption;
+		this.state = state;
 
 		this.registerEvent(
 			this.app.vault.on('modify', async (file) => {
-				if (file === this.file1 || file === this.file2) {
+				if (file === this.state.file1 || file === this.state.file2) {
 					await this.updateState();
 					this.build();
 				}
@@ -61,9 +56,13 @@ export class DifferencesView extends ItemView {
 		this.build();
 	}
 
+	async onunload(): Promise<void> {
+		this.state.continueCallback?.(false);
+	}
+
 	private async updateState(): Promise<void> {
-		this.file1Content = await this.app.vault.read(this.file1);
-		this.file2Content = await this.app.vault.read(this.file2);
+		this.file1Content = await this.app.vault.read(this.state.file1);
+		this.file2Content = await this.app.vault.read(this.state.file2);
 
 		this.file1Lines = this.file1Content
 			// Add trailing new line as this removes edge cases
@@ -79,8 +78,8 @@ export class DifferencesView extends ItemView {
 			.map((line) => line.trimEnd());
 
 		const parsedDiff = structuredPatch(
-			this.file1.path,
-			this.file2.path,
+			this.state.file1.path,
+			this.state.file2.path,
 			this.file1Lines.join('\n'),
 			this.file2Lines.join('\n')
 		);
@@ -112,7 +111,7 @@ export class DifferencesView extends ItemView {
 		this.scrollToFirstDifference();
 		if (
 			this.fileDifferences.differences.length === 0 &&
-			this.showMergeOption &&
+			this.state.showMergeOption &&
 			!this.wasDeleteModalShown
 		) {
 			this.wasDeleteModalShown = true;
@@ -162,11 +161,11 @@ export class DifferencesView extends ItemView {
 			this.build();
 		};
 
-		if (this.showMergeOption) {
+		if (this.state.showMergeOption) {
 			new ActionLine({
 				difference,
-				file1: this.file1,
-				file2: this.file2,
+				file1: this.state.file1,
+				file2: this.state.file2,
 				file1Content: this.file1Content,
 				file2Content: this.file2Content,
 				triggerRebuild,
@@ -215,12 +214,13 @@ export class DifferencesView extends ItemView {
 
 		return new Promise((resolve, reject) => {
 			new DeleteFileModal({
-				file1: this.file1,
-				file2: this.file2,
+				file1: this.state.file1,
+				file2: this.state.file2,
 				onDone: (e) => {
 					if (e) {
 						return reject(e);
 					}
+					this.state.continueCallback?.(true);
 					this.leaf.detach();
 					return resolve();
 				},

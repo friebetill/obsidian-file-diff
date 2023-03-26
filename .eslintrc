@@ -22,6 +22,7 @@
 	"rules": {
 		"class-methods-use-this": "off",
 		"no-use-before-define": "off",
+		"no-restricted-syntax": "off",
 		"no-warning-comments": 1,
 		"semi": [2, "always"],
 		"@typescript-eslint/no-use-before-define": ["error"],

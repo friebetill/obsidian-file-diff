@@ -9,6 +9,8 @@
 
 `Compare and merge`: Same as `Compare`, but you have the option to merge changes.
 
+`Find sync conflicts and merge`: Finds all Syncthing conflicts and shows the merge option for each conflict sequentially.
+
 <img
 src="https://user-images.githubusercontent.com/10923085/216749496-27f0b241-c05b-4aec-ba88-a7c8c91938a6.gif"
 alt="GIF of a demo show this plugin" width="900" />

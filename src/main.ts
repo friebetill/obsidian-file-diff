@@ -3,6 +3,7 @@ import { Plugin, TFile } from 'obsidian';
 import {
 	DifferencesView,
 	VIEW_TYPE_DIFFERENCES,
+	ViewState,
 } from './components/differences_view';
 import { RiskyActionModal } from './components/modals/risky_action_modal';
 import { SelectFileModal } from './components/modals/select_file_modal';
@@ -20,34 +21,21 @@ export default class FileDiffPlugin extends Plugin {
 			id: 'compare',
 			name: 'Compare',
 			editorCallback: async () => {
-				// Get current active file
 				const activeFile = this.app.workspace.getActiveFile();
 				if (activeFile == null) {
 					return;
 				}
 
-				// Get file to compare
 				const compareFile = await this.getFileToCompare(activeFile);
 				if (compareFile == null) {
 					return;
 				}
 
-				// Open differences view
-				this.app.workspace.detachLeavesOfType(VIEW_TYPE_DIFFERENCES);
-
-				await this.app.workspace.getLeaf(true).setViewState({
-					type: VIEW_TYPE_DIFFERENCES,
-					active: true,
-					state: {
-						file1: activeFile,
-						file2: compareFile,
-						showMergeOption: false,
-					},
+				this.openDifferencesView({
+					file1: activeFile,
+					file2: compareFile,
+					showMergeOption: false,
 				});
-
-				this.app.workspace.revealLeaf(
-					this.app.workspace.getLeavesOfType(VIEW_TYPE_DIFFERENCES)[0]
-				);
 			},
 		});
 
@@ -63,34 +51,54 @@ export default class FileDiffPlugin extends Plugin {
 					}
 				}
 
-				// Get current active file
 				const activeFile = this.app.workspace.getActiveFile();
 				if (activeFile == null) {
 					return;
 				}
 
-				// Get file to compare
 				const compareFile = await this.getFileToCompare(activeFile);
 				if (compareFile == null) {
 					return;
 				}
 
-				// Open differences view
-				this.app.workspace.detachLeavesOfType(VIEW_TYPE_DIFFERENCES);
-
-				await this.app.workspace.getLeaf(true).setViewState({
-					type: VIEW_TYPE_DIFFERENCES,
-					active: true,
-					state: {
-						file1: activeFile,
-						file2: compareFile,
-						showMergeOption: true,
-					},
+				this.openDifferencesView({
+					file1: activeFile,
+					file2: compareFile,
+					showMergeOption: true,
 				});
+			},
+		});
 
-				this.app.workspace.revealLeaf(
-					this.app.workspace.getLeavesOfType(VIEW_TYPE_DIFFERENCES)[0]
-				);
+		this.addCommand({
+			id: 'find-sync-conflicts-and-merge',
+			name: 'Find sync conflicts and merge',
+			callback: async () => {
+				// Show warning when this option is selected for the first time
+				if (!localStorage.getItem(this.fileDiffMergeWarningKey)) {
+					await this.showRiskyActionModal();
+					if (!localStorage.getItem(this.fileDiffMergeWarningKey)) {
+						return;
+					}
+				}
+
+				const syncConflicts = this.findSyncConflicts();
+
+				for await (const syncConflict of syncConflicts) {
+					const continuePromise = new Promise<boolean>((resolve) => {
+						this.openDifferencesView({
+							file1: syncConflict.originalFile,
+							file2: syncConflict.syncConflictFile,
+							showMergeOption: true,
+							continueCallback: async (shouldContinue: boolean) =>
+								resolve(shouldContinue),
+						});
+					});
+
+					const shouldContinue = await continuePromise;
+					if (!shouldContinue) {
+						break;
+					}
+				}
 			},
 		});
 	}
@@ -135,5 +143,49 @@ export default class FileDiffPlugin extends Plugin {
 				},
 			}).open();
 		});
+	}
+
+	async openDifferencesView(state: ViewState): Promise<void> {
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_DIFFERENCES);
+
+		await this.app.workspace.getLeaf(true).setViewState({
+			type: VIEW_TYPE_DIFFERENCES,
+			active: true,
+			state,
+		});
+
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(VIEW_TYPE_DIFFERENCES)[0]
+		);
+	}
+
+	findSyncConflicts(): { originalFile: TFile; syncConflictFile: TFile }[] {
+		const syncConflicts: {
+			originalFile: TFile;
+			syncConflictFile: TFile;
+		}[] = [];
+
+		const files = app.vault.getMarkdownFiles();
+
+		for (const file of files) {
+			if (file.name.includes('sync-conflict')) {
+				const originalFileName = file.name.replace(
+					/\.sync-conflict-\d{8}-\d{6}-[A-Z0-9]+/,
+					''
+				);
+				const originalFile = files.find(
+					(f) => f.name === originalFileName
+				);
+
+				if (originalFile) {
+					syncConflicts.push({
+						originalFile,
+						syncConflictFile: file,
+					});
+				}
+			}
+		}
+
+		return syncConflicts;
 	}
 }
