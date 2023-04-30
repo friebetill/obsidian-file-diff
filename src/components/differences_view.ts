@@ -1,5 +1,5 @@
 import { structuredPatch } from 'diff';
-import { ItemView, TFile } from 'obsidian';
+import { ItemView, TFile, ViewStateResult, WorkspaceLeaf } from 'obsidian';
 import { Difference } from '../data/difference';
 import { FileDifferences } from '../data/file_differences';
 import { preventEmptyString } from '../utils/string_utils';
@@ -16,6 +16,21 @@ export interface ViewState {
 }
 
 export class DifferencesView extends ItemView {
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+
+		this.registerEvent(
+			this.app.vault.on('modify', async (file) => {
+				if (file !== this.state.file1 && file !== this.state.file2) {
+					return;
+				}
+
+				await this.updateState();
+				this.build();
+			})
+		);
+	}
+
 	private state: ViewState;
 
 	private file1Content: string;
@@ -37,20 +52,21 @@ export class DifferencesView extends ItemView {
 	}
 
 	override getDisplayText(): string {
+		if (this.state?.file1 && this.state?.file2) {
+			return (
+				`File Diff: ${this.state.file1.name} ` +
+				`and ${this.state.file2.name}`
+			);
+		}
 		return `File Diff`;
 	}
 
-	override async setState(state: ViewState): Promise<void> {
+	override async setState(
+		state: ViewState,
+		result: ViewStateResult
+	): Promise<void> {
+		super.setState(state, result);
 		this.state = state;
-
-		this.registerEvent(
-			this.app.vault.on('modify', async (file) => {
-				if (file === this.state.file1 || file === this.state.file2) {
-					await this.updateState();
-					this.build();
-				}
-			})
-		);
 
 		await this.updateState();
 		this.build();
@@ -61,8 +77,12 @@ export class DifferencesView extends ItemView {
 	}
 
 	private async updateState(): Promise<void> {
-		this.file1Content = await this.app.vault.read(this.state.file1);
-		this.file2Content = await this.app.vault.read(this.state.file2);
+		if (this.state.file1 == null || this.state.file2 == null) {
+			return;
+		}
+
+		this.file1Content = await this.app.vault.cachedRead(this.state.file1);
+		this.file2Content = await this.app.vault.cachedRead(this.state.file2);
 
 		this.file1Lines = this.file1Content
 			// Add trailing new line as this removes edge cases

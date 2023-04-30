@@ -148,15 +148,14 @@ export default class FileDiffPlugin extends Plugin {
 	async openDifferencesView(state: ViewState): Promise<void> {
 		this.app.workspace.detachLeavesOfType(VIEW_TYPE_DIFFERENCES);
 
-		await this.app.workspace.getLeaf(true).setViewState({
+		const leaf = await this.app.workspace.getLeaf(true);
+		leaf.setViewState({
 			type: VIEW_TYPE_DIFFERENCES,
 			active: true,
 			state,
 		});
 
-		this.app.workspace.revealLeaf(
-			this.app.workspace.getLeavesOfType(VIEW_TYPE_DIFFERENCES)[0]
-		);
+		this.app.workspace.revealLeaf(leaf);
 	}
 
 	findSyncConflicts(): { originalFile: TFile; syncConflictFile: TFile }[] {
