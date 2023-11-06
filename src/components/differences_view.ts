@@ -43,8 +43,6 @@ export class DifferencesView extends ItemView {
 
 	private file2Lines: string[];
 
-	private lineCount: number;
-
 	private wasDeleteModalShown = false;
 
 	override getViewType(): string {
@@ -88,10 +86,11 @@ export class DifferencesView extends ItemView {
 			// Add trailing new line as this removes edge cases
 			.concat('\n')
 			.split('\n')
-			// Streamline empty lines at the end as this remove edge cases
+			// Streamline empty spaces at the end as this remove edge cases
 			.map((line) => line.trimEnd());
+
 		this.file2Lines = this.file2Content
-			// Add trailing new line as this removes edge cases
+			// Add trailing new spaces as this removes edge cases
 			.concat('\n')
 			.split('\n')
 			// Streamline empty lines at the end as this remove edge cases
@@ -105,18 +104,6 @@ export class DifferencesView extends ItemView {
 		);
 		this.fileDifferences = FileDifferences.fromParsedDiff(parsedDiff);
 
-		this.lineCount = Math.max(
-			this.file1Lines.length -
-				// Count each difference as one line
-				this.fileDifferences.differences.filter(
-					(d) => d.file1Lines.length > 0
-				).length,
-			this.file2Lines.length -
-				// Count each difference as one line
-				this.fileDifferences.differences.filter(
-					(d) => d.file2Lines.length > 0
-				).length
-		);
 	}
 
 	private build(): void {
@@ -142,7 +129,8 @@ export class DifferencesView extends ItemView {
 	private buildLines(container: HTMLDivElement): void {
 		let lineCount1 = 0;
 		let lineCount2 = 0;
-		while (lineCount1 <= this.lineCount || lineCount2 <= this.lineCount) {
+		const maxLineCount = Math.max(this.file1Lines.length, this.file2Lines.length)
+		while (lineCount1 <= maxLineCount || lineCount2 <= maxLineCount) {
 			const difference = this.fileDifferences.differences.find(
 				// eslint-disable-next-line no-loop-func
 				(d) =>
