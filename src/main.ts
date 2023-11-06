@@ -146,15 +146,16 @@ export default class FileDiffPlugin extends Plugin {
 	}
 
 	async openDifferencesView(state: ViewState): Promise<void> {
+		// Closes all leafs (views) of the type VIEW_TYPE_DIFFERENCES
 		this.app.workspace.detachLeavesOfType(VIEW_TYPE_DIFFERENCES);
 
-		const leaf = await this.app.workspace.getLeaf(true);
+		// Opens a new leaf (view) of the type VIEW_TYPE_DIFFERENCES
+		const leaf = this.app.workspace.getLeaf(true);
 		leaf.setViewState({
 			type: VIEW_TYPE_DIFFERENCES,
 			active: true,
 			state,
 		});
-
 		this.app.workspace.revealLeaf(leaf);
 	}
 

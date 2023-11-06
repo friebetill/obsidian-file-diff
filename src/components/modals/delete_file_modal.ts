@@ -54,11 +54,6 @@ export class DeleteFileModal extends Modal {
 
 		this.close();
 
-		const leaf = this.app.workspace.getLeaf();
-		if (leaf != null) {
-			leaf.openFile(this.file1);
-		}
-
 		this.onDone(null);
 	}
 }
