@@ -17,7 +17,7 @@ alt="GIF of a demo show this plugin" width="900" />
 
 ## Motivation
 
-I created this plugin because I use SyncThing and it bothered me to clean up merge conflicts by hand.
+I created this plugin because I use [SyncThing](https://syncthing.net/) and it bothered me to clean up merge conflicts by hand.
 
 ## Installation
 
