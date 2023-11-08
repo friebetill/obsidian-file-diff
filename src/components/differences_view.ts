@@ -1,4 +1,4 @@
-import { structuredPatch } from 'diff';
+import { structuredPatch, diffWords } from 'diff';
 import { ItemView, TFile, ViewStateResult, WorkspaceLeaf } from 'obsidian';
 import { Difference } from '../data/difference';
 import { FileDifferences } from '../data/file_differences';
@@ -164,11 +164,6 @@ export class DifferencesView extends ItemView {
 		container: HTMLDivElement,
 		difference: Difference
 	): void {
-		const triggerRebuild = async (): Promise<void> => {
-			await this.updateState();
-			this.build();
-		};
-
 		if (this.state.showMergeOption) {
 			new ActionLine({
 				difference,
@@ -176,27 +171,84 @@ export class DifferencesView extends ItemView {
 				file2: this.state.file2,
 				file1Content: this.file1Content,
 				file2Content: this.file2Content,
-				triggerRebuild,
+				triggerRebuild: async (): Promise<void> => {
+					await this.updateState();
+					this.build();
+				},
 			}).build(container);
 		}
 
+		// Draw top diff
 		for (let i = 0; i < difference.file1Lines.length; i += 1) {
-			const line = difference.file1Lines[i];
-			container.createDiv({
-				// Necessary to give the line a height when it's empty.
-				text: preventEmptyString(line),
-				cls: 'file-diff__line file-diff__top-line__bg',
-			});
+			const line1 = difference.file1Lines[i];
+			const line2 = difference.file2Lines[i];
+
+			const lineDiv = container.createDiv({ cls: 'file-diff__line file-diff__top-line__bg' });
+			const diffSpans = this.buildDiffLine(line1, line2, 'file-diff_top-line__character');
+
+			// Remove border radius if applicable
+			if (i < difference.file1Lines.length - 1 || difference.file2Lines.length !== 0) {
+				lineDiv.classList.add('file-diff__no-bottom-border');
+			}
+			if (i !== 0) {
+				lineDiv.classList.add('file-diff__no-top-border');
+			}
+
+			lineDiv.appendChild(diffSpans);
 		}
 
+		// Draw bottom diff
 		for (let i = 0; i < difference.file2Lines.length; i += 1) {
-			const line = difference.file2Lines[i];
-			container.createDiv({
-				// Necessary to give the line a height when it's empty.
-				text: preventEmptyString(line),
-				cls: 'file-diff__line file-diff__bottom-line__bg',
-			});
+			const line1 = difference.file1Lines[i];
+			const line2 = difference.file2Lines[i];
+
+			const lineDiv = container.createDiv({ cls: 'file-diff__line file-diff__bottom-line__bg' });
+			const diffSpans = this.buildDiffLine(line2, line1, 'file-diff_bottom-line__character');
+
+			// Remove border radius if applicable
+			if ((i == 0 && difference.file1Lines.length > 0) || i > 0) {
+				lineDiv.classList.add('file-diff__no-top-border');
+			}
+			if (i < difference.file2Lines.length - 1) {
+				lineDiv.classList.add('file-diff__no-bottom-border');
+			}
+
+			lineDiv.appendChild(diffSpans);
 		}
+	}
+
+	private buildDiffLine(line1: string, line2: string, charClass: string) {
+		const fragment = document.createElement('div');
+
+		if (line1 != undefined && line1.length === 0) {
+			fragment.textContent = preventEmptyString(line1);
+		} else if (line1 != undefined && line2 != undefined) {
+			const differences = diffWords(line2, line1);
+
+			for (const difference of differences) {
+				if (difference.removed) {
+					continue;
+				}
+
+				const span = document.createElement('span');
+				// Necessary to give the line a height when it's empty.
+				span.textContent = preventEmptyString(difference.value);
+				if (difference.added) {
+					span.classList.add(charClass);
+				}
+				fragment.appendChild(span);
+			}
+		} else if(line1 != undefined && line2 == undefined) {
+			const span = document.createElement('span');
+			// Necessary to give the line a height when it's empty.
+			span.textContent = preventEmptyString(line1);
+			span.classList.add(charClass);
+			fragment.appendChild(span);
+		} else {
+			fragment.textContent = preventEmptyString(line1);
+		}
+
+		return fragment;
 	}
 
 	private scrollToFirstDifference(): void {
