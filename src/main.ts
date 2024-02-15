@@ -174,7 +174,7 @@ export default class FileDiffPlugin extends Plugin {
 					''
 				);
 				const originalFile = files.find(
-					(f) => f.name === originalFileName
+					(f) => f.name === originalFileName && (file.parent?.path ?? "") === (f.parent?.path ?? "")
 				);
 
 				if (originalFile) {
